@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificate</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<button onclick="downloadCertificate()" class="download-btn">
+  📥 Download Certificate
+</button>
+<div class="certificate-container">
+
+  <div class="certificate">
+
+```
+<h1>CERTIFICATE OF PARTICIPATION</h1>
+
+<p>This certificate is proudly presented to</p>
+
+<h2 id="studentName">Student Name</h2>
+
+<p>for successfully participating in</p>
+
+<h3 id="eventName">Event Name</h3>
+
+<p>Organized through CampusPulse Event Management System</p>
+
+<br>
+
+<p>Date: <span id="certificateDate"></span></p>
+```
+
+  </div>
+
+</div>
+
+<script src="../js/script.js"></script>
+
+<script>
+document.getElementById("certificateDate").textContent =
+new Date().toLocaleDateString("en-IN");
+</script>
+
+<script>
+function downloadCertificate() {
+  window.print();
+}
+</script>
+</body>
+</html>

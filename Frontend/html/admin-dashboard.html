@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CampusPulse | Admin Dashboard</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="app">
+<aside class="sidebar">
+  <h2>CampusPulse</h2>
+
+  <a id="dashboardLink" href="dashboard.html">🏠 Dashboard</a>
+  <a id="eventsLink" href="events.html">📅 Events</a>
+  <a id="noticesLink" href="notices.html">📢 Notices</a>
+  <a id="registrationsLink" href="my-registrations.html">✅ My Registrations</a>
+  <a href="certificates.html" id="certificatesLink">
+  🏅 Certificates
+</a>
+  <a id="manageEventsLink" href="manage-events.html">🛠 Manage Events</a>
+  <a id="createEventLink" href="create-event.html">➕ Create Event</a>
+  <a id="adminDashboardLink" href="admin-dashboard.html">📊 Admin Dashboard</a>
+  <a id="attendanceLink" href="attendance.html">✅ Attendance</a>
+  <a href="#" onclick="logout()">🚪 Logout</a>
+</aside>
+
+  <main class="main">
+    <section class="welcome">
+      <div>
+        <h1>Admin Dashboard</h1>
+        <p>Track events, registrations, and participation.</p>
+      </div>
+    </section>
+
+    <section class="stats-grid">
+      <div class="stat-card">
+        <span>📅</span>
+        <p>Total Events</p>
+        <h2 id="totalEvents">0</h2>
+      </div>
+
+      <div class="stat-card">
+        <span>✅</span>
+        <p>Total Registrations</p>
+        <h2 id="totalRegistrations">0</h2>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Recent Registrations</h2>
+      <div id="registrationsList"></div>
+      <h2 style="margin-top:30px;">Event Statistics</h2>
+<div id="eventStats"></div>
+    </section>
+  </main>
+</div>
+
+<script src="../js/script.js"></script>
+</body>
+</html>

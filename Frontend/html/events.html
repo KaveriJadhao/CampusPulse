@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CampusPulse | Events</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+  <h2>CampusPulse</h2>
+
+  <a id="dashboardLink" href="dashboard.html">🏠 Dashboard</a>
+  <a id="eventsLink" href="events.html">📅 Events</a>
+  <a id="noticesLink" href="notices.html">📢 Notices</a>
+  <a id="registrationsLink" href="my-registrations.html">✅ My Registrations</a>
+  <a href="certificates.html" id="certificatesLink">
+  🏅 Certificates
+</a>
+  <a id="manageEventsLink" href="manage-events.html">🛠 Manage Events</a>
+  <a id="createEventLink" href="create-event.html">➕ Create Event</a>
+  <a id="adminDashboardLink" href="admin-dashboard.html">📊 Admin Dashboard</a>
+  <a id="attendanceLink" href="attendance.html">✅ Attendance</a>
+  <a href="#" onclick="logout()">🚪 Logout</a>
+    <div class="side-card">
+      <h3>Find your next opportunity</h3>
+      <p>Explore events from all forums and clubs.</p>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <header class="topbar">
+      <input type="text" placeholder="Search events..." />
+      <div class="profile">
+        🔔 <span>Welcome, KAVERI</span>
+      </div>
+    </header>
+
+    <section class="welcome">
+      <div>
+        <h1>Explore Events</h1>
+        <p>Find hackathons, workshops, competitions, seminars and more.</p>
+      </div>
+    </section>
+
+    <section class="filter-tabs">
+      <button class="active-filter">All</button>
+      <button>Hackathon</button>
+      <button>Workshop</button>
+      <button>Cultural</button>
+      <button>Sports</button>
+      <button>Technical</button>
+    </section>
+     <section class="filter-tabs">
+  <input type="text" id="searchInput" placeholder="Search events..." />
+
+  <select id="categoryFilter">
+    <option value="All">All Categories</option>
+    <option value="Hackathon">Hackathon</option>
+    <option value="Workshop">Workshop</option>
+    <option value="Competition">Competition</option>
+    <option value="Cultural">Cultural</option>
+    <option value="Sports">Sports</option>
+    <option value="Technical">Technical</option>
+  </select>
+
+  <select id="departmentFilter">
+    <option value="All">All Departments</option>
+    <option value="CSE">CSE</option>
+    <option value="AIML">AIML</option>
+    <option value="AIDS">AIDS</option>
+    <option value="IT">IT</option>
+    <option value="ENTC">ENTC</option>
+  </select>
+</section>
+    <section class="events-grid" id="eventsContainer">
+
+      <div class="big-event-card">
+        <div class="event-banner purple">AI</div>
+        <div class="event-info">
+          <h3>AI Hackathon 2026</h3>
+          <p>AIML Department</p>
+          <span>📅 25 June 2026</span>
+          <span>📍 Seminar Hall 1</span>
+          <button>View Details</button>
+        </div>
+      </div>
+
+      <div class="big-event-card">
+        <div class="event-banner blue">WEB</div>
+        <div class="event-info">
+          <h3>Web Development Workshop</h3>
+          <p>CSE Forum</p>
+          <span>📅 28 June 2026</span>
+          <span>📍 Computer Lab 3</span>
+          <button>View Details</button>
+        </div>
+      </div>
+
+      <div class="big-event-card">
+        <div class="event-banner orange">CODE</div>
+        <div class="event-info">
+          <h3>Code Carnival 2.0</h3>
+          <p>IT Department</p>
+          <span>📅 5 July 2026</span>
+          <span>📍 Auditorium</span>
+          <a href="events-details.html?id=${event._id}" class="view-btn">
+  View Details
+</a>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+<script src="../js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CampusPulse | Create Event</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="app">
+ <aside class="sidebar">
+  <h2>CampusPulse</h2>
+
+  <a id="dashboardLink" href="dashboard.html">🏠 Dashboard</a>
+  <a id="eventsLink" href="events.html">📅 Events</a>
+  <a id="noticesLink" href="notices.html">📢 Notices</a>
+  <a id="registrationsLink" href="my-registrations.html">✅ My Registrations</a>
+  <a href="certificates.html" id="certificatesLink">
+  🏅 Certificates
+</a>
+  <a id="manageEventsLink" href="manage-events.html">🛠 Manage Events</a>
+  <a id="createEventLink" href="create-event.html">➕ Create Event</a>
+  <a id="adminDashboardLink" href="admin-dashboard.html">📊 Admin Dashboard</a>
+  <a id="attendanceLink" href="attendance.html">✅ Attendance</a>
+  <a href="#" onclick="logout()">🚪 Logout</a>
+</aside>
+
+  <main class="main">
+    <section class="welcome">
+      <div>
+        <h1>Create New Event</h1>
+        <p>Post event details for students in one place.</p>
+      </div>
+    </section>
+
+    <section class="form-card">
+      <form id="eventForm">
+        <label>Event Name</label>
+        <input type="text" name="title" placeholder="AI Hackathon 2026" required>
+
+        <label>Event Category</label>
+        <select name="category" required>
+          <option value="">Select category</option>
+          <option>Hackathon</option>
+          <option>Workshop</option>
+          <option>Cultural</option>
+          <option>Sports</option>
+          <option>Technical</option>
+        </select>
+
+        <label>Department / Forum / Club</label>
+        <input type="text" name="organizer" placeholder="AIML Forum" required>
+
+        <label>Date</label>
+        <input type="date" name="date" required>
+
+        <label>Time</label>
+        <input type="time" name="time" required>
+
+        <label>Venue</label>
+        <input type="text" name="venue" placeholder="Seminar Hall 1" required>
+
+        <label>Registration Fee</label>
+        <input type="number" name="fee" placeholder="100">
+
+        <label>Event Description</label>
+        <textarea name="description" placeholder="Write event details..." required></textarea>
+
+        <label>Upload Poster</label>
+        <input type="file" name="poster">
+
+        <button type="submit">Publish Event</button>
+      </form>
+    </section>
+  </main>
+</div>
+<script src="../js/script.js"></script>
+</body>
+</html>

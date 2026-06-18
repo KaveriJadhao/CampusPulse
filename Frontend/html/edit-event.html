@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CampusPulse | Edit Event</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <h2>CampusPulse</h2>
+    <a href="manage-events.html">⬅ Back</a>
+  </aside>
+
+  <main class="main">
+    <section class="welcome">
+      <div>
+        <h1>Edit Event</h1>
+        <p>Update event details.</p>
+      </div>
+    </section>
+
+    <section class="form-card">
+      <form id="editEventForm">
+        <label>Event Name</label>
+        <input type="text" name="title" id="editTitle" required>
+
+        <label>Category</label>
+        <input type="text" name="category" id="editCategory" required>
+
+        <label>Organizer</label>
+        <input type="text" name="organizer" id="editOrganizer" required>
+
+        <label>Date</label>
+        <input type="date" name="date" id="editDate" required>
+
+        <label>Time</label>
+        <input type="time" name="time" id="editTime" required>
+
+        <label>Venue</label>
+        <input type="text" name="venue" id="editVenue" required>
+
+        <label>Fee</label>
+        <input type="number" name="fee" id="editFee">
+
+        <label>Description</label>
+        <textarea name="description" id="editDescription" required></textarea>
+
+        <button type="submit">Update Event</button>
+      </form>
+    </section>
+  </main>
+</div>
+
+<script src="../js/script.js"></script>
+</body>
+</html>

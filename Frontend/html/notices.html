@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CampusPulse | Notices</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="app">
+<aside class="sidebar">
+  <h2>CampusPulse</h2>
+
+  <a id="dashboardLink" href="dashboard.html">🏠 Dashboard</a>
+  <a id="eventsLink" href="events.html">📅 Events</a>
+  <a id="noticesLink" href="notices.html">📢 Notices</a>
+  <a id="registrationsLink" href="my-registrations.html">✅ My Registrations</a>
+  <a href="certificates.html" id="certificatesLink">
+  🏅 Certificates
+</a>
+  <a id="manageEventsLink" href="manage-events.html">🛠 Manage Events</a>
+  <a id="createEventLink" href="create-event.html">➕ Create Event</a>
+  <a id="adminDashboardLink" href="admin-dashboard.html">📊 Admin Dashboard</a>
+  <a id="attendanceLink" href="attendance.html">✅ Attendance</a>
+  <a href="#" onclick="logout()">🚪 Logout</a>
+</aside>
+
+  <main class="main">
+    <section class="welcome">
+      <div>
+        <h1>Notice Board</h1>
+        <p>All important campus updates in one place.</p>
+      </div>
+    </section>
+
+    <section class="form-card" id="noticePostSection">
+      <form id="noticeForm">
+        <label>Notice Title</label>
+        <input type="text" name="title" placeholder="Hackathon Registration Open" required>
+
+        <label>Category</label>
+        <select name="category" required>
+          <option value="">Select Category</option>
+          <option>Hackathon</option>
+          <option>Internship</option>
+          <option>Scholarship</option>
+          <option>Competition</option>
+          <option>Exam</option>
+          <option>General</option>
+        </select>
+
+        <label>Department</label>
+        <input type="text" name="department" placeholder="CSE Department" required>
+
+        <label>Description</label>
+        <textarea name="description" placeholder="Write notice details..." required></textarea>
+
+        <button type="submit">Post Notice</button>
+      </form>
+    </section>
+
+    <section class="panel" style="margin-top: 25px;">
+      <h2>Latest Notices</h2>
+      <div id="noticesList"></div>
+    </section>
+  </main>
+</div>
+
+<script src="../js/script.js"></script>
+</body>
+</html>

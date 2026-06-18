@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusPulse | Register</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <h1>Event Registration</h1>
+    <p>Fill your details to register</p>
+
+    <form id="registrationForm">
+      <input type="text" name="studentName" placeholder="Full Name" required>
+      <input type="email" name="email" placeholder="College Email" required>
+
+      <select name="branch" required>
+        <option value="">Select Branch</option>
+        <option>CSE</option>
+        <option>AIML</option>
+        <option>AIDS</option>
+        <option>IT</option>
+        <option>ENTC</option>
+        <option>Mechanical</option>
+        <option>Civil</option>
+        <option>Electrical</option>
+      </select>
+
+      <select name="year" required>
+        <option value="">Select Year</option>
+        <option>1st Year</option>
+        <option>2nd Year</option>
+        <option>3rd Year</option>
+        <option>4th Year</option>
+      </select>
+
+      <button type="submit">Submit Registration</button>
+    </form>
+  </div>
+</div>
+
+<script src="../js/script.js"></script>
+</body>
+</html>

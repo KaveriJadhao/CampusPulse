@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CampusPulse | Dashboard</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+  <h2>CampusPulse</h2>
+
+  <a id="dashboardLink" href="dashboard.html">🏠 Dashboard</a>
+  <a id="eventsLink" href="events.html">📅 Events</a>
+  <a id="noticesLink" href="notices.html">📢 Notices</a>
+  <a id="registrationsLink" href="my-registrations.html">✅ My Registrations</a>
+  <a href="certificates.html" id="certificatesLink">
+  🏅 Certificates
+</a>
+  <a id="manageEventsLink" href="manage-events.html">🛠 Manage Events</a>
+  <a id="createEventLink" href="create-event.html">➕ Create Event</a>
+  <a id="adminDashboardLink" href="admin-dashboard.html">📊 Admin Dashboard</a>
+  <a id="attendanceLink" href="attendance.html">✅ Attendance</a>
+  <a href="#" onclick="logout()">🚪 Logout</a>
+
+    <div class="side-card">
+      <h3>Participate. Learn. Grow.</h3>
+      <p>Join events and build your skills.</p>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <header class="topbar">
+      <input type="text" placeholder="Search events, notices, clubs..." />
+      <div class="profile">
+        🔔 <span id="dashboardUserName">Welcome</span>
+      </div>
+    </header>
+
+    <section class="welcome">
+      <div>
+        <h1 id="welcomeText">Welcome back 👋</h1>
+        <p>Here’s what’s happening in your campus today.</p>
+      </div>
+
+      <div class="date-box">
+        📅 Today<br>
+        <span id="todayDate"></span>
+      </div>
+    </section>
+
+    <section class="stats-grid">
+      <div class="stat-card">
+        <span>📅</span>
+        <p>Total Events</p>
+        <h2 id="dashboardEvents">0</h2>
+      </div>
+
+      <div class="stat-card">
+        <span>🎟️</span>
+        <p>Total Registrations</p>
+        <h2 id="dashboardRegistrations">0</h2>
+      </div>
+
+      <div class="stat-card">
+        <span>✅</span>
+        <p>Attendance Marked</p>
+        <h2 id="dashboardCertificates">0</h2>
+      </div>
+
+      <div class="stat-card">
+        <span>📢</span>
+        <p>Total Notices</p>
+        <h2 id="dashboardNotices">0</h2>
+      </div>
+    </section>
+
+    <section class="content-grid">
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Upcoming Events</h2>
+          <a href="events.html">View All</a>
+        </div>
+
+        <div id="dashboardEventsList"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Notice Board</h2>
+          <a href="notices.html">View All</a>
+        </div>
+
+        <div id="dashboardNoticesList"></div>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+<script src="../js/script.js"></script>
+</body>
+</html>

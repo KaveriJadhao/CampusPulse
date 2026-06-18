@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusPulse | Event Details</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+  <h2>CampusPulse</h2>
+
+  <a id="dashboardLink" href="dashboard.html">🏠 Dashboard</a>
+  <a id="eventsLink" href="events.html">📅 Events</a>
+  <a id="noticesLink" href="notices.html">📢 Notices</a>
+  <a id="registrationsLink" href="my-registrations.html">✅ My Registrations</a>
+  <a href="certificates.html" id="certificatesLink">
+  🏅 Certificates
+</a>
+  <a id="manageEventsLink" href="manage-events.html">🛠 Manage Events</a>
+  <a id="createEventLink" href="create-event.html">➕ Create Event</a>
+  <a id="adminDashboardLink" href="admin-dashboard.html">📊 Admin Dashboard</a>
+  <a id="attendanceLink" href="attendance.html">✅ Attendance</a>
+  <a href="#" onclick="logout()">🚪 Logout</a>
+</aside>
+
+  <main class="main">
+
+    <div class="event-hero">
+      <div class="hero-content">
+        <span class="event-tag" id="eventCategory">Loading...</span>
+        <h1 id="eventTitle">Loading...</h1>
+        <p id="eventDescription">Loading...</p>
+        <div class="event-actions">
+  <button class="register-btn" id="registerBtn">
+    Register
+  </button>
+
+  <button class="attendance-btn" id="attendanceBtn">
+    Check In
+  </button>
+</div>
+      </div>
+
+      <div class="hero-image" id="eventShort">CP</div>
+    </div>
+
+    <div class="details-grid">
+
+      <div class="details-card">
+        <h2>About Event</h2>
+        <p id="eventAbout">Loading...</p>
+
+        <h3>Rules</h3>
+        <ul>
+          <li>Carry your college ID card</li>
+          <li>Register before the deadline</li>
+          <li>Follow event instructions properly</li>
+          <li>Be present on time</li>
+        </ul>
+      </div>
+
+      <div class="info-card">
+        <h2>Event Information</h2>
+
+        <div class="info-item">
+          <strong>Date</strong>
+          <span id="eventDate"></span>
+        </div>
+
+        <div class="info-item">
+          <strong>Time</strong>
+          <span id="eventTime"></span>
+        </div>
+
+        <div class="info-item">
+          <strong>Venue</strong>
+          <span id="eventVenue"></span>
+        </div>
+
+        <div class="info-item">
+          <strong>Registration Fee</strong>
+          <span id="eventFee"></span>
+        </div>
+
+        <div class="info-item">
+          <strong>Organizer</strong>
+          <span id="eventOrganizer"></span>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<script src="../js/script.js"></script>
+</body>
+</html>
