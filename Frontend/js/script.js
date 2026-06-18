@@ -1,5 +1,4 @@
-const API = "http://localhost:5000/api";
-
+const API = "https://campuspulse-yrrx.onrender.com/api";
 // LOGIN CHECK
 const user = JSON.parse(localStorage.getItem("user"));
 const currentPage = window.location.pathname;
