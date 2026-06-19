@@ -9,79 +9,73 @@
 </head>
 <body>
 
-  <div class="auth-container">
-    <div class="auth-card">
+ <div class="auth-container">
 
-     <div class="logo">
-  <div class="logo-icon">CP</div>
+  <div class="auth-card">
 
-  <div>
-    <div class="logo-text">CampusPulse</div>
-    
+    <h1 class="auth-title">CampusPulse</h1>
+
+    <p>Create your student account</p>
+
+    <form id="signupForm">
+
+      <input
+        type="text"
+        name="fullName"
+        autocomplete="name"
+        required
+        placeholder="Full Name"
+      >
+
+      <input
+        type="email"
+        name="email"
+        autocomplete="email"
+        required
+        placeholder="Email"
+      >
+
+      <input
+        type="password"
+        name="password"
+        autocomplete="new-password"
+        required
+        placeholder="Password"
+      >
+
+      <select name="branch" required>
+        <option value="">Select Branch</option>
+        <option>CSE</option>
+        <option>IT</option>
+        <option>AI</option>
+        <option>DS</option>
+        <option>Cyber</option>
+        <option>ENTC</option>
+        <option>Mechanical</option>
+        <option>Civil</option>
+        <option>Electrical</option>
+      </select>
+
+      <select name="year" required>
+        <option value="">Select Year</option>
+        <option>1st Year</option>
+        <option>2nd Year</option>
+        <option>3rd Year</option>
+        <option>4th Year</option>
+      </select>
+
+      <button type="submit">Create Account</button>
+
+    </form>
+
+    <p class="switch-text">
+      Already have an account?
+      <a href="index.html">Login</a>
+    </p>
+
   </div>
+
 </div>
-      <p>Create your student account</p>
-
-      <form id="signupForm">
-        <input
-  type="text"
-  name="fullName"
-  autocomplete="name"
-  required
-  placeholder="Full Name"
->
-
-<input
-  type="email"
-  name="email"
-  autocomplete="email"
-  required
-  placeholder="Email"
->
-
-<input
-  type="password"
-  name="password"
-  autocomplete="new-password"
-  required
-  placeholder="Password"
->
-        <select name="branch" required>
-          <option value="">Select Branch</option>
-          <option>CSE</option>
-          <option>IT</option>
-          <option>AI</option>
-          <option>DS</option>
-          <option>Cyber</option>
-          <option>ENTC</option>
-          <option>Mechanical</option>
-          <option>Civil</option>
-          <option>Electrical</option>
-        </select>
-
-        <select name="year" required>
-          <option value="">Select Year</option>
-          <option>1st Year</option>
-          <option>2nd Year</option>
-          <option>3rd Year</option>
-          <option>4th Year</option>
-        </select>
-
-        
-
-        <button type="submit">
-          Create Account
-        </button>
-
-      </form>
-
-      <p class="switch-text">
-        Already have an account?
-        <a href="index.html">Login</a>
-      </p>
-
-    </div>
-  </div>
 
   <script src="../js/script.js"></script>
 
