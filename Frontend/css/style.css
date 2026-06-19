@@ -1069,3 +1069,173 @@ table td {
     background-size: cover;
   }
 }
+/* FINAL MOBILE FIX */
+
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .auth-container {
+    min-height: 100vh;
+    padding: 20px;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 380px;
+    padding: 28px 22px;
+  }
+
+  .auth-title {
+    font-size: 34px;
+  }
+
+  .app {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    padding: 18px;
+    border-right: none;
+    border-bottom: 5px solid var(--accent);
+  }
+
+  .logo {
+    margin-bottom: 20px;
+  }
+
+  .logo-icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    font-size: 16px;
+  }
+
+  .logo-text {
+    font-size: 24px;
+  }
+
+  .sidebar a {
+    font-size: 14px;
+    padding: 11px 14px;
+    margin-bottom: 7px;
+  }
+
+  .main {
+    margin-left: 0;
+    width: 100%;
+    padding: 16px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .topbar input {
+    width: 100%;
+  }
+
+  .welcome {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .welcome h1 {
+    font-size: 28px;
+  }
+
+  .stats-grid,
+  .content-grid,
+  .events-grid,
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 20px;
+    min-height: auto;
+  }
+
+  .stat-card p {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .stat-card h2 {
+    font-size: 34px;
+  }
+
+  .panel,
+  .form-card,
+  .big-event-card,
+  .details-card,
+  .info-card {
+    width: 100%;
+  }
+
+  .event-item {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .event-img {
+    width: 100%;
+    height: 80px;
+  }
+
+  .event-hero {
+    flex-direction: column;
+    padding: 26px;
+    text-align: center;
+  }
+
+  .hero-content h1 {
+    font-size: 32px;
+  }
+
+  .hero-image {
+    width: 140px;
+    height: 140px;
+  }
+
+  .event-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .event-actions button {
+    width: 100%;
+  }
+
+  .certificate {
+    width: 100%;
+    padding: 28px 20px;
+  }
+
+  .certificate h1 {
+    font-size: 28px;
+  }
+
+  .certificate h2 {
+    font-size: 32px;
+  }
+
+  .certificate h3 {
+    font-size: 24px;
+  }
+
+  .certificate-footer {
+    flex-direction: column;
+    gap: 28px;
+    align-items: center;
+  }
+}
