@@ -1021,3 +1021,7 @@ async function loadCertificates() {
     `;
   });
 }
+function toggleMenu() {
+  document.querySelector(".sidebar")
+          .classList.toggle("show");
+}

@@ -10,7 +10,9 @@
 <body>
 
 <div class="app">
-
+ <button class="menu-btn" onclick="toggleMenu()">
+  ☰
+</button>
   <aside class="sidebar">
   <div class="logo">
   <div class="logo-icon">CP</div>
@@ -21,7 +23,9 @@
   </div>
 </div>
 
-  <a id="dashboardLink" href="dashboard.html"> Dashboard</a>
+ <a href="dashboard.html" onclick="toggleMenu()">
+  Dashboard
+</a>
   <a id="eventsLink" href="events.html"> Events</a>
   <a id="noticesLink" href="notices.html"> Notices</a>
   <a id="registrationsLink" href="my-registrations.html"> My Registrations</a>
