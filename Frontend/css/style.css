@@ -37,10 +37,15 @@ button {
 .auth-container {
   min-height: 100vh;
   background:
-    linear-gradient(rgba(0, 51, 102, 0.82), rgba(0, 64, 128, 0.82)),
+    linear-gradient(
+      rgba(0, 51, 102, 0.55),
+      rgba(0, 64, 128, 0.55)
+    ),
     url("../images/college-bg.jpg");
+
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
