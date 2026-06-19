@@ -138,63 +138,69 @@ function displayEvents(events) {
   });
 }
 // SEARCH + FILTER
+
 const searchInput = document.getElementById("searchInput");
-const categoryFilter = document.getElementById("categoryFilter");
 const departmentFilter = document.getElementById("departmentFilter");
 
-function filterEvents() {
-  let filtered = allEvents;
+let selectedCategory = "All";
 
-  const searchText = searchInput?.value.toLowerCase() || "";
-  const selectedCategory = categoryFilter?.value || "All";
+function filterEvents(category = selectedCategory) {
+  selectedCategory = category;
+
+  let filtered = [...allEvents];
+
+  const searchText = searchInput?.value.trim().toLowerCase() || "";
   const selectedDepartment = departmentFilter?.value || "All";
 
+  // SEARCH
   if (searchText) {
-    filtered = filtered.filter((event) =>
-      event.title.toLowerCase().includes(searchText)
+    filtered = filtered.filter((event) => {
+      return (
+        (event.title || "").toLowerCase().includes(searchText) ||
+        (event.description || "").toLowerCase().includes(searchText) ||
+        (event.category || "").toLowerCase().includes(searchText) ||
+        (event.organizer || "").toLowerCase().includes(searchText) ||
+        (event.venue || "").toLowerCase().includes(searchText)
+      );
+    });
+  }
+
+  // CATEGORY BUTTON FILTER
+  if (selectedCategory !== "All") {
+    filtered = filtered.filter(
+      (event) =>
+        (event.category || "").toLowerCase() ===
+        selectedCategory.toLowerCase()
     );
   }
 
-  if (selectedCategory !== "All") {
-    filtered = filtered.filter((event) => event.category === selectedCategory);
-  }
-
+  // DEPARTMENT FILTER
   if (selectedDepartment !== "All") {
-    filtered = filtered.filter((event) => event.organizer === selectedDepartment);
+    filtered = filtered.filter(
+      (event) =>
+        (event.organizer || "").toLowerCase() ===
+        selectedDepartment.toLowerCase()
+    );
   }
 
   displayEvents(filtered);
 }
 
-if (searchInput) searchInput.addEventListener("input", filterEvents);
-if (categoryFilter) categoryFilter.addEventListener("change", filterEvents);
-if (departmentFilter) departmentFilter.addEventListener("change", filterEvents);
-
-// EVENT DETAILS
-const urlParams = new URLSearchParams(window.location.search);
-const currentEventId = urlParams.get("id");
-
-if (currentEventId && document.getElementById("eventTitle")) {
-  loadEventDetails();
+// SEARCH EVENT
+if (searchInput) {
+  searchInput.addEventListener("input", () => {
+    filterEvents();
+  });
 }
 
-async function loadEventDetails() {
-  const response = await fetch(`${API}/events/${currentEventId}`);
-  const event = await response.json();
-
-  document.getElementById("eventCategory").textContent = event.category;
-  document.getElementById("eventTitle").textContent = event.title;
-  document.getElementById("eventDescription").textContent = event.description;
-  document.getElementById("eventAbout").textContent = event.description;
-  document.getElementById("eventDate").textContent = event.date;
-  document.getElementById("eventTime").textContent = event.time;
-  document.getElementById("eventVenue").textContent = event.venue;
-  document.getElementById("eventFee").textContent = `₹${event.fee}`;
-  document.getElementById("eventOrganizer").textContent = event.organizer;
-  document.getElementById("eventShort").textContent = event.category
-    .slice(0, 3)
-    .toUpperCase();
+// DEPARTMENT DROPDOWN
+if (departmentFilter) {
+  departmentFilter.addEventListener("change", () => {
+    filterEvents();
+  });
 }
+
+
 
 // REGISTER BUTTON
 const registerBtn = document.getElementById("registerBtn");
