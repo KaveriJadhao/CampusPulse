@@ -639,37 +639,40 @@ button:hover,
 .logo {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   margin-bottom: 34px;
 }
 
 .logo-icon {
-  width: 58px;
-  height: 58px;
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
   background: var(--accent);
   color: var(--primary);
-  border-radius: 14px;
+  border-radius: 12px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 900;
 }
 
 .logo-text {
-  font-size: 31px;
+  font-size: 28px;
   font-weight: 900;
   color: white;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .logo-subtitle {
-  font-size: 12px;
+  font-size: 10px;
   color: #dbeafe;
-  margin-top: 5px;
+  margin-top: 4px;
   font-weight: 600;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 
