@@ -959,3 +959,125 @@ body {
   font-weight: 800;
   text-decoration: none;
 }
+/* MOBILE RESPONSIVE FIX */
+
+@media (max-width: 768px) {
+  .app {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    padding: 18px;
+  }
+
+  .sidebar h2 {
+    font-size: 24px;
+    margin-bottom: 18px;
+  }
+
+  .sidebar a {
+    padding: 12px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .side-card {
+    display: none;
+  }
+
+  .main {
+    margin-left: 0;
+    width: 100%;
+    padding: 18px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .topbar input {
+    width: 100%;
+  }
+
+  .welcome {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .welcome h1 {
+    font-size: 26px;
+  }
+
+  .stats-grid,
+  .content-grid,
+  .details-grid,
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .event-hero {
+    padding: 28px;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-content h1 {
+    font-size: 34px;
+  }
+
+  .hero-image {
+    width: 160px;
+    height: 160px;
+  }
+
+  .event-item {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+
+  .event-img {
+    width: 100%;
+    height: 90px;
+  }
+
+  .event-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .event-actions button {
+    width: 100%;
+  }
+
+  .form-card,
+  .panel,
+  .attendance-card,
+  .auth-card {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .certificate {
+    width: 100%;
+    padding: 28px;
+  }
+
+  .certificate h1 {
+    font-size: 28px;
+  }
+
+  .certificate h2 {
+    font-size: 30px;
+  }
+
+  .certificate-footer {
+    flex-direction: column;
+    gap: 35px;
+    align-items: center;
+  }
+}
