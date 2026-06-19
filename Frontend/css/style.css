@@ -210,7 +210,7 @@ button:hover,
 }
 
 .topbar input {
-  width: 420px;
+  width: 350px;
   padding: 13px 16px;
   border-radius: 10px;
   border: 1px solid var(--border);
@@ -231,9 +231,9 @@ button:hover,
 }
 
 .welcome h1 {
-  font-size: 34px;
+  font-size: 42px;
   color: var(--primary);
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .welcome p {
@@ -271,18 +271,22 @@ button:hover,
   font-size: 28px;
 }
 
-.stat-card p {
-  margin-top: 12px;
-  color: var(--muted);
-  font-weight: 600;
+.stat-card p{
+  font-size: 18px;
+  font-weight: 700;
 }
 
-.stat-card h2 {
-  margin-top: 8px;
-  font-size: 34px;
-  color: var(--primary);
+.stat-card h2{
+  font-size: 42px;
+}
+.stat-card{
+  transition: all 0.25s ease;
 }
 
+.stat-card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(0,51,102,0.12);
+}
 .content-grid {
   margin-top: 24px;
   display: grid;
@@ -633,24 +637,18 @@ button:hover,
   gap: 12px;
 }
 
-.logo-icon {
-  width: 44px;
-  height: 44px;
-  background: var(--accent);
-  color: var(--primary);
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.logo-text{
+  font-size: 32px;
   font-weight: 900;
-  font-size: 18px;
 }
 
-.logo-text {
-  font-size: 24px;
-  font-weight: 800;
-  color: white;
+.logo-icon{
+  width: 52px;
+  height: 52px;
+  font-size: 20px;
 }
+
+
 
 /* REMOVE AI LOOK */
 
@@ -779,4 +777,10 @@ table td {
     width: 100%;
     padding: 28px;
   }
+}
+.logo-subtitle{
+  font-size: 12px;
+  color: #dbeafe;
+  margin-top: 2px;
+  font-weight: 500;
 }
