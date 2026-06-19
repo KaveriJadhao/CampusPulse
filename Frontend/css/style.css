@@ -1412,3 +1412,20 @@ table td {
     width: 100%;
   }
 }
+.event-footer {
+  margin-top: 18px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-fee {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.event-footer .view-btn {
+  width: auto;
+}

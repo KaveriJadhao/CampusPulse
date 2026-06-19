@@ -3,6 +3,11 @@ const API = "https://campuspulse-yrrx.onrender.com/api";
 const user = JSON.parse(localStorage.getItem("user"));
 const currentPage = window.location.pathname;
 const currentFile = currentPage.split("/").pop();
+const welcomeUser = document.getElementById("welcomeUser");
+
+if (welcomeUser && user) {
+  welcomeUser.textContent = `Welcome, ${user.fullName}`;
+}
 
 // REDIRECT IF NOT LOGGED IN
 if (
@@ -124,19 +129,26 @@ function displayEvents(events) {
           <h3>${event.title}</h3>
           <p>${event.organizer}</p>
 
-          <span>📅 ${event.date}</span>
-          <span>⏰ ${event.time}</span>
-          <span>📍 ${event.venue}</span>
-          <span>💰 ₹${event.fee}</span>
+          <span>${event.date}</span>
+<span>${event.time}</span>
+<span>${event.venue}</span>
+          <div class="event-footer">
 
-          <a href="event-details.html?id=${event._id}" class="view-btn">
-            View Details
-          </a>
+  <span class="event-fee">
+    ₹${event.fee}
+  </span>
+
+  <a href="event-details.html?id=${event._id}" class="view-btn">
+    View Details
+  </a>
+
+</div>
         </div>
       </div>
     `;
   });
 }
+
 // SEARCH + FILTER
 
 const searchInput = document.getElementById("searchInput");
@@ -201,7 +213,37 @@ if (departmentFilter) {
 }
 
 
+// EVENT DETAILS PAGE
+const urlParams = new URLSearchParams(window.location.search);
+const currentEventId = urlParams.get("id");
 
+if (currentEventId && document.getElementById("eventTitle")) {
+  loadEventDetails();
+}
+
+async function loadEventDetails() {
+  try {
+    const response = await fetch(`${API}/events/${currentEventId}`);
+    const event = await response.json();
+
+    document.getElementById("eventCategory").textContent = event.category || "Event";
+    document.getElementById("eventTitle").textContent = event.title || "Event Title";
+    document.getElementById("eventDescription").textContent = event.description || "";
+    document.getElementById("eventAbout").textContent = event.description || "";
+    document.getElementById("eventDate").textContent = event.date || "";
+    document.getElementById("eventTime").textContent = event.time || "";
+    document.getElementById("eventVenue").textContent = event.venue || "";
+    document.getElementById("eventFee").textContent = `₹${event.fee || 0}`;
+    document.getElementById("eventOrganizer").textContent = event.organizer || "";
+
+    document.getElementById("eventShort").textContent =
+      (event.category || "EVT").slice(0, 3).toUpperCase();
+
+  } catch (error) {
+    console.log(error);
+    alert("Failed to load event details");
+  }
+}
 // REGISTER BUTTON
 const registerBtn = document.getElementById("registerBtn");
 
@@ -229,6 +271,7 @@ if (registrationForm) {
       year: formData.get("year"),
       paymentStatus: "Paid",
     };
+
 
     // GET EVENT DETAILS
     const eventResponse = await fetch(
