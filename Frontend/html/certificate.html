@@ -1,53 +1,72 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Certificate</title>
+  <title>CampusPulse | Certificate</title>
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-<button onclick="downloadCertificate()" class="download-btn">
-   Download Certificate
-</button>
-<div class="certificate-container">
 
-  <div class="certificate">
+<div class="certificate-page">
 
-```
-<h1>CERTIFICATE OF PARTICIPATION</h1>
+  <div class="certificate" id="certificateBox">
 
-<p>This certificate is proudly presented to</p>
+    <div class="certificate-top">
+      <div class="cert-logo">CP</div>
+      <div>
+        <h4>CampusPulse</h4>
+        <p>Campus Event Portal</p>
+      </div>
+    </div>
 
-<h2 id="studentName">Student Name</h2>
+    <h1>Certificate of Participation</h1>
 
-<p>for successfully participating in</p>
+    <p class="cert-line">This certificate is proudly presented to</p>
 
-<h3 id="eventName">Event Name</h3>
+    <h2 id="studentName">Student Name</h2>
 
-<p>Organized through CampusPulse Event Management System</p>
+    <p class="cert-line">for successfully participating in</p>
 
-<br>
+    <h3 id="eventName">Event Name</h3>
 
-<p>Date: <span id="certificateDate"></span></p>
-```
+    <p class="cert-desc">
+      Organized through CampusPulse Event Management System.
+    </p>
+
+    <div class="certificate-footer">
+      <div>
+        <hr>
+        <p>Event Coordinator</p>
+      </div>
+
+      <div>
+        <hr>
+        <p>Principal / Authority</p>
+      </div>
+    </div>
+
+    <p class="cert-id">
+      Certificate ID: CP-2026-<span id="certificateId"></span>
+    </p>
 
   </div>
+
+  <button onclick="downloadCertificate()" class="download-btn">
+    Download Certificate
+  </button>
 
 </div>
 
 <script src="../js/script.js"></script>
 
 <script>
-document.getElementById("certificateDate").textContent =
-new Date().toLocaleDateString("en-IN");
+  document.getElementById("certificateId").textContent =
+    Math.floor(100000 + Math.random() * 900000);
+
+  function downloadCertificate() {
+    window.print();
+  }
 </script>
 
-<script>
-function downloadCertificate() {
-  window.print();
-}
-</script>
 </body>
 </html>
