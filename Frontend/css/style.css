@@ -981,7 +981,8 @@ textarea:focus {
   .sidebar a#eventsLink,
   .sidebar a#noticesLink,
   .sidebar a#registrationsLink,
-  .sidebar a#certificatesLink {
+  .sidebar a#certificatesLink
+  .sidebar a#logoutLink {
     display: inline-flex !important;
     width: auto !important;
     font-size: 13px !important;
@@ -1122,4 +1123,39 @@ textarea:focus {
   .event-footer .view-btn {
     width: 100% !important;
   }
+  .landing-hero{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:20px !important;
+  padding:30px 20px !important;
+}
+
+.hero-left{
+  width:100% !important;
+}
+
+.preview-card{
+  width:100% !important;
+  margin:0 !important;
+}
+
+.hero-left h1{
+  font-size:48px !important;
+  line-height:1.1 !important;
+}
+
+.feature-grid{
+  grid-template-columns:1fr !important;
+}
+
+.role-grid{
+  grid-template-columns:1fr !important;
+}
+}
+.notice p,
+.notice small,
+.notice div,
+.event-item p {
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
