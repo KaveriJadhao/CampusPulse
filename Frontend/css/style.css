@@ -1429,3 +1429,15 @@ table td {
 .event-footer .view-btn {
   width: auto;
 }
+.manage-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.manage-actions button {
+  width: auto;
+}
+.profile-only {
+  justify-content: flex-end;
+}

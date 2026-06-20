@@ -514,10 +514,15 @@ async function loadManageEvents() {
           <small>${event.date} • ${event.venue}</small>
         </div>
 
-        <div>
-          <button onclick="editEvent('${event._id}')">Edit</button>
-          <button onclick="deleteEvent('${event._id}')">Delete</button>
-        </div>
+        <div class="manage-actions">
+  <button onclick="editEvent('${event._id}')">Edit</button>
+
+  <button onclick="openAttendance('${event._id}')">
+    Attendance
+  </button>
+
+  <button onclick="deleteEvent('${event._id}')">Delete</button>
+</div>
       </div>
     `;
   });
@@ -525,6 +530,9 @@ async function loadManageEvents() {
 
 function editEvent(id) {
   window.location.href = `edit-event.html?id=${id}`;
+}
+function openAttendance(id) {
+  window.location.href = `mark-attendance.html?id=${id}`;
 }
 
 async function deleteEvent(id) {
@@ -775,10 +783,8 @@ if (attendanceForm) {
 // ATTENDANCE BUTTON
 const attendanceBtn = document.getElementById("attendanceBtn");
 
-if (attendanceBtn) {
-  attendanceBtn.addEventListener("click", () => {
-    window.location.href = `mark-attendance.html?id=${currentEventId}`;
-  });
+if (attendanceBtn && user?.role === "student") {
+  attendanceBtn.style.display = "none";
 }
 
 // ATTENDANCE LIST
