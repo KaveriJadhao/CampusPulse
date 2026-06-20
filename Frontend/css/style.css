@@ -1159,3 +1159,118 @@ textarea:focus {
   overflow-wrap: break-word;
   word-break: break-word;
 }
+/* FINAL FIX: MOBILE HOME + LOGOUT */
+
+@media (max-width: 768px) {
+
+  /* show logout on mobile */
+  .sidebar a#logoutLink,
+  .sidebar a[onclick="logout()"] {
+    display: inline-flex !important;
+    width: auto !important;
+    font-size: 13px !important;
+    padding: 8px 11px !important;
+    margin: 3px !important;
+    border-radius: 999px !important;
+    background: rgba(255,255,255,0.08) !important;
+    color: #eaf2fb !important;
+  }
+
+  /* home page header */
+  .landing-header {
+    position: static !important;
+    width: 100% !important;
+    padding: 16px 18px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+
+  .landing-logo {
+    font-size: 24px !important;
+  }
+
+  .landing-header nav {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 10px !important;
+  }
+
+  .landing-header nav a {
+    font-size: 14px !important;
+  }
+
+  /* home hero */
+  .landing-hero {
+    min-height: auto !important;
+    display: block !important;
+    padding: 36px 20px !important;
+    text-align: center !important;
+  }
+
+  .hero-left {
+    width: 100% !important;
+  }
+
+  .hero-badge {
+    font-size: 13px !important;
+    padding: 8px 14px !important;
+  }
+
+  .hero-left h1 {
+    font-size: 42px !important;
+    line-height: 1.1 !important;
+    max-width: 100% !important;
+  }
+
+  .hero-text {
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+    max-width: 100% !important;
+  }
+
+  .hero-buttons {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    margin-top: 26px !important;
+  }
+
+  .hero-buttons a {
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .hero-right {
+    width: 100% !important;
+    margin-top: 24px !important;
+  }
+
+  .preview-card {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 24px !important;
+    text-align: left !important;
+  }
+
+  .landing-section {
+    padding: 44px 20px !important;
+  }
+
+  .landing-section h2 {
+    font-size: 32px !important;
+  }
+
+  .feature-grid,
+  .role-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .feature-card,
+  .role-card {
+    width: 100% !important;
+  }
+}
