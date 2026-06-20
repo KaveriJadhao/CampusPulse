@@ -69,3 +69,43 @@ CampusPulse is a full-stack college event management platform designed to stream
 Kaveri Jadhao
 Computer Science Engineering
 GH Raisoni College of Engineering & Management (Nagpur)
+
+# Project Screenshots
+
+## Home Page
+
+![Home Page](screenshots/home-page-1.png)
+
+![Home Page Continued](screenshots/home-page-2.png)
+
+## Login Page
+
+![Login](screenshots/login.png)
+
+## Student Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
+## Events Page
+
+![Events](screenshots/events.png)
+
+## Event Details
+
+![Event Details](screenshots/event-details.png)
+
+## Manage Events
+
+![Manage Events](screenshots/manage-events.png)
+
+## Attendance System
+
+![Attendance](screenshots/attendance.png)
+
+## Certificate Generation
+
+![Certificate](screenshots/certificate.png)
+
+## Admin Dashboard
+
+![Admin Dashboard](screenshots/admin-dashboard.png)
