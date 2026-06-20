@@ -1160,3 +1160,25 @@ textarea:focus {
   overflow-wrap: break-word;
   word-break: break-word;
 }
+@media (max-width: 768px) {
+  .sidebar a#dashboardLink,
+  .sidebar a#eventsLink,
+  .sidebar a#noticesLink,
+  .sidebar a#registrationsLink,
+  .sidebar a#certificatesLink,
+  .sidebar a#manageEventsLink,
+  .sidebar a#createEventLink,
+  .sidebar a#attendanceLink,
+  .sidebar a#adminDashboardLink,
+  .sidebar a#logoutLink,
+  .sidebar a[onclick="logout()"] {
+    display: inline-flex !important;
+    width: auto !important;
+    font-size: 13px !important;
+    padding: 8px 11px !important;
+    margin: 3px !important;
+    border-radius: 999px !important;
+    background: rgba(255,255,255,0.08) !important;
+    color: #eaf2fb !important;
+  }
+}

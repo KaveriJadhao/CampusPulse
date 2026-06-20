@@ -787,6 +787,7 @@ if (attendanceBtn && user?.role === "student") {
   attendanceBtn.style.display = "none";
 }
 
+
 // ATTENDANCE LIST
 const attendanceList = document.getElementById("attendanceList");
 
