@@ -1,29 +1,31 @@
 # CampusPulse
 
-CampusPulse is a full-stack college event management platform designed to streamline event discovery, registration, attendance tracking, notices, and certificate generation for students and administrators.
+CampusPulse is a full-stack college event management platform designed to streamline event discovery, registrations, attendance tracking, notices, and certificate generation.
+
+## Live Demo
+
+Frontend: https://your-vercel-link.vercel.app
 
 ## Features
 
 ### Student
 
-* View upcoming events
+* View events
 * Register for events
 * View registrations
 * Download certificates
-* Access campus notices
+* Access notices
 
 ### Forum Admin
 
 * Create events
 * Manage events
 * Mark attendance
-* Publish notices
 
 ### College Admin
 
-* Monitor platform activity
-* View event statistics
-* Manage administrative operations
+* View statistics
+* Manage platform activities
 
 ## Tech Stack
 
@@ -44,31 +46,14 @@ CampusPulse is a full-stack college event management platform designed to stream
 
 ### Deployment
 
-* Vercel (Frontend)
-* Render (Backend)
+* Vercel
+* Render
 
-## Key Modules
+## Role-Based Access Control
 
-* Authentication & Authorization
-* Role-Based Access Control
-* Event Management
-* Attendance Management
-* Certificate Generation
-* Notice Management
-* Responsive User Interface
-
-## Future Enhancements
-
-* QR-based attendance
-* Email notifications
-* Event analytics dashboard
-* Mobile application
-
-## Author
-
-Kaveri Jadhao
-Computer Science Engineering
-GH Raisoni College of Engineering & Management (Nagpur)
+* Student
+* Forum Admin
+* College Admin
 
 # Project Screenshots
 
@@ -109,3 +94,18 @@ GH Raisoni College of Engineering & Management (Nagpur)
 ## Admin Dashboard
 
 ![Admin Dashboard](screenshots/admin-dashboard.png)
+
+## Future Enhancements
+
+* QR Attendance
+* Email Notifications
+* Mobile App
+* Event Analytics
+
+## Author
+
+Kaveri Jadhao
+
+Computer Science Engineering
+
+GH Raisoni College of Engineering & Management (Nagpur)
