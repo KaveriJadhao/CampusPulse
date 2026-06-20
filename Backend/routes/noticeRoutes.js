@@ -39,11 +39,12 @@ router.delete("/:id", async (req, res) => {
     await Notice.findByIdAndDelete(req.params.id);
 
     res.json({
-      message: "Notice deleted successfully"
+      message: "Notice deleted successfully",
     });
-  } catch (err) {
+  } catch (error) {
     res.status(500).json({
-      message: err.message
+      message: "Failed to delete notice",
+      error: error.message,
     });
   }
 });
