@@ -970,44 +970,39 @@ if (user?.role === "forum-admin") {
 }
 // ROLE-BASED SIDEBAR
 
-const dashboardLink = document.getElementById("dashboardLink");
-const eventsLink = document.getElementById("eventsLink");
-const noticesLink = document.getElementById("noticesLink");
-const registrationsLink = document.getElementById("registrationsLink");
 const manageEventsLink = document.getElementById("manageEventsLink");
 const createEventLink = document.getElementById("createEventLink");
 const adminDashboardLink = document.getElementById("adminDashboardLink");
 const attendanceLink = document.getElementById("attendanceLink");
+const eventsLink = document.getElementById("eventsLink");
+const registrationsLink = document.getElementById("registrationsLink");
 const certificatesLink = document.getElementById("certificatesLink");
 
+function removeElement(element) {
+  if (element) element.remove();
+}
+
 if (user) {
-
-  // STUDENT
   if (user.role === "student") {
-
-    if (manageEventsLink) manageEventsLink.style.display = "none";
-    if (createEventLink) createEventLink.style.display = "none";
-    if (adminDashboardLink) adminDashboardLink.style.display = "none";
-    if (attendanceLink) attendanceLink.style.display = "none";
+    removeElement(manageEventsLink);
+    removeElement(createEventLink);
+    removeElement(adminDashboardLink);
+    removeElement(attendanceLink);
   }
 
-  // FORUM ADMIN
   if (user.role === "forum-admin") {
-
-    if (eventsLink) eventsLink.style.display = "none";
-    if (registrationsLink) registrationsLink.style.display = "none";
-    if (adminDashboardLink) adminDashboardLink.style.display = "none";
-    if (certificatesLink) certificatesLink.style.display = "none";
+    removeElement(eventsLink);
+    removeElement(registrationsLink);
+    removeElement(adminDashboardLink);
+    removeElement(certificatesLink);
   }
 
-  // COLLEGE ADMIN
   if (user.role === "college-admin") {
-
-    if (eventsLink) eventsLink.style.display = "none";
-    if (registrationsLink) registrationsLink.style.display = "none";
-    if (manageEventsLink) manageEventsLink.style.display = "none";
-    if (createEventLink) createEventLink.style.display = "none";
-    if (certificatesLink) certificatesLink.style.display = "none";
+    removeElement(eventsLink);
+    removeElement(registrationsLink);
+    removeElement(manageEventsLink);
+    removeElement(createEventLink);
+    removeElement(certificatesLink);
   }
 }
 
