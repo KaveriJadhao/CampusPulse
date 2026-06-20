@@ -4,7 +4,7 @@ CampusPulse is a full-stack college event management platform designed to stream
 
 ## Live Demo
 
-Frontend: https://your-vercel-link.vercel.app
+Frontend: https://campus-pulse-drab-alpha.vercel.app/
 
 ## Features
 
