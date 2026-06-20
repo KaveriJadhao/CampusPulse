@@ -1182,3 +1182,38 @@ textarea:focus {
     color: #eaf2fb !important;
   }
 }
+.delete-btn {
+  background: red;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.notice .delete-btn {
+  margin-left: 5px;
+  margin-top: 8px;
+
+  background: #dc2626;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  width: fit-content;
+}
+
+.notice .delete-btn:hover {
+  background: #b91c1c;
+}
+
+@media (max-width: 768px) {
+  .notice {
+    grid-template-columns: 32px 1fr;
+  }
+
+  .notice .delete-btn {
+    grid-column: 1 / -1;
+    justify-self: start;
+    margin-top: 8px;
+  }
+}

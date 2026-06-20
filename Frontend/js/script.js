@@ -487,9 +487,26 @@ async function loadNotices() {
           ${notice.description}
         </p>
         <small>New</small>
+        ${user?.role !== "student" ? `
+<button
+  class="delete-btn"
+  onclick="deleteNotice('${notice._id}')"
+>
+  Delete
+</button>
+` : ""}
       </div>
     `;
   });
+  async function deleteNotice(id) {
+  if (!confirm("Delete this notice?")) return;
+
+  await fetch(`${API}/notices/${id}`, {
+    method: "DELETE",
+  });
+
+  loadNotices();
+}
 }
 
 // MANAGE EVENTS

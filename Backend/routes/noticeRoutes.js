@@ -33,5 +33,18 @@ router.get("/", async (req, res) => {
     });
   }
 });
+// DELETE NOTICE
+router.delete("/:id", async (req, res) => {
+  try {
+    await Notice.findByIdAndDelete(req.params.id);
 
+    res.json({
+      message: "Notice deleted successfully"
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message
+    });
+  }
+});
 module.exports = router;
