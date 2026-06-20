@@ -934,7 +934,7 @@ textarea:focus {
     box-shadow: none;
   }
 }
-/* FINAL MOBILE RESPONSIVENESS */
+/* MOBILE: KEEP DESKTOP LAYOUT */
 
 .menu-btn {
   display: none !important;
@@ -942,254 +942,75 @@ textarea:focus {
 
 @media (max-width: 768px) {
   body {
-    overflow-x: hidden;
+    min-width: 1200px;
+    overflow-x: auto;
   }
 
   .app {
-    display: block;
+    display: flex !important;
+    min-width: 1200px;
   }
 
   .sidebar {
-    position: relative !important;
-    width: 100% !important;
-    height: auto !important;
-    padding: 14px !important;
-    border-right: none !important;
-    border-bottom: 5px solid var(--accent);
-  }
-
-  .logo {
-    margin-bottom: 12px !important;
-  }
-
-  .logo-icon {
-    width: 38px !important;
-    height: 38px !important;
-    min-width: 38px !important;
-    font-size: 14px !important;
-  }
-
-  .logo-text {
-    font-size: 22px !important;
+    position: fixed !important;
+    width: 260px !important;
+    height: 100vh !important;
+    padding: 24px 18px !important;
+    border-right: 5px solid var(--accent) !important;
+    border-bottom: none !important;
   }
 
   .sidebar a {
-    display: inline-flex !important;
-    padding: 7px 9px !important;
-    margin: 3px !important;
-    font-size: 12px !important;
-    border-radius: 8px;
-  }
-
-  .side-card {
-    display: none !important;
-  }
-
-  .main {
-    margin-left: 0 !important;
-    width: 100% !important;
-    padding: 14px !important;
-  }
-
-  .topbar {
     display: block !important;
-    padding: 14px !important;
-    border-radius: 14px !important;
-  }
-
-  .topbar input {
-    width: 100% !important;
-  }
-
-  .profile {
-    margin-top: 10px;
-    font-size: 14px;
-  }
-
-  .welcome {
-    display: block !important;
-    margin-top: 18px;
-  }
-
-  .welcome h1 {
-    font-size: 30px !important;
-    line-height: 1.25;
-  }
-
-  .welcome p {
-    font-size: 15px;
-    line-height: 1.5;
-  }
-
-  .date-box {
-    margin-top: 14px;
-    width: 100%;
-  }
-
-  .stats-grid,
-  .content-grid,
-  .events-grid,
-  .details-grid,
-  .feature-grid,
-  .role-grid {
-    grid-template-columns: 1fr !important;
-    gap: 14px !important;
-  }
-
-  .stat-card {
-    padding: 16px !important;
-    min-height: auto !important;
-  }
-
-  .stat-card p {
     font-size: 15px !important;
-    margin-bottom: 6px !important;
+    padding: 13px 16px !important;
+    margin-bottom: 8px !important;
   }
 
-  .stat-card h2 {
-    font-size: 30px !important;
+  .logo-icon {
+    width: 46px !important;
+    height: 46px !important;
+    min-width: 46px !important;
+    font-size: 18px !important;
   }
 
-  .filter-tabs {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 10px !important;
-  }
-
-  .filter-tabs input,
-  .filter-tabs select {
-    grid-column: 1 / -1;
-    width: 100% !important;
-  }
-
-  .filter-tabs button {
-    width: 100% !important;
-    padding: 11px !important;
-  }
-
-  .event-item {
-    grid-template-columns: 1fr !important;
-    gap: 10px !important;
-  }
-
-  .event-img {
-    width: 100% !important;
-    height: 65px !important;
-  }
-
-  .event-info {
-    padding: 18px !important;
-  }
-
-  .event-footer {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 12px !important;
-  }
-
-  .event-footer .view-btn,
-  .view-btn,
-  .event-actions button,
-  .manage-actions button {
-    width: 100% !important;
-  }
-
-  .event-hero {
-    flex-direction: column !important;
-    text-align: center;
-    padding: 26px !important;
-  }
-
-  .hero-content h1 {
-    font-size: 32px !important;
-  }
-
-  .hero-image {
-    width: 140px !important;
-    height: 140px !important;
-  }
-
-  .panel,
-  .form-card,
-  .big-event-card,
-  .details-card,
-  .info-card,
-  .auth-card {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 20px !important;
-    border-radius: 16px !important;
-  }
-
-  .auth-container {
-    padding: 20px;
-    background-size: cover;
-    background-position: center;
-  }
-
-  .auth-title {
-    font-size: 34px !important;
-  }
-
-  .certificate {
-    width: 100% !important;
-    padding: 28px 20px !important;
-  }
-
-  .certificate h1 {
+  .logo-text {
     font-size: 28px !important;
   }
 
-  .certificate h2 {
-    font-size: 32px !important;
+  .main {
+    margin-left: 260px !important;
+    width: calc(100% - 260px) !important;
+    padding: 28px !important;
   }
 
-  .certificate h3 {
-    font-size: 24px !important;
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
   }
 
-  .certificate-footer {
-    flex-direction: column;
-    gap: 28px;
-    align-items: center;
+  .content-grid {
+    grid-template-columns: 2fr 1fr !important;
   }
 
-  .landing-header {
-    position: static;
-    flex-direction: column;
-    gap: 16px;
-    text-align: center;
+  .events-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
   }
 
-  .landing-header nav {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 14px;
+  .details-grid {
+    grid-template-columns: 2fr 1fr !important;
   }
 
-  .landing-hero {
-    grid-template-columns: 1fr !important;
-    text-align: center;
-    padding: 55px 20px !important;
+  .event-item {
+    grid-template-columns: 80px 1fr auto !important;
   }
 
-  .hero-left h1 {
-    font-size: 38px !important;
+  .event-img {
+    width: 80px !important;
+    height: 70px !important;
   }
 
-  .hero-text {
-    font-size: 16px !important;
-  }
-
-  .hero-buttons {
-    flex-direction: column;
-  }
-
-  .landing-section {
-    padding: 50px 20px !important;
-  }
-
-  .landing-section h2 {
-    font-size: 32px !important;
+  .view-btn,
+  button {
+    width: auto !important;
   }
 }
