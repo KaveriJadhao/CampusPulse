@@ -522,8 +522,7 @@ async function deleteNotice(id) {
     alert("Failed to delete notice");
   }
 }
-
-// MANAGE EVENTS
+// MANAGE EVENTS PAGE
 const manageEventsList = document.getElementById("manageEventsList");
 
 if (manageEventsList) {
