@@ -436,6 +436,7 @@ const noticePostSection = document.getElementById("noticePostSection");
 if (noticePostSection && user?.role === "student") {
   noticePostSection.style.display = "none";
 }
+
 if (noticeForm) {
   noticeForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -481,32 +482,45 @@ async function loadNotices() {
     noticesList.innerHTML += `
       <div class="notice">
         <span>📢</span>
+
         <p>
           <strong>${notice.title}</strong><br>
           ${notice.department} • ${notice.category}<br>
           ${notice.description}
         </p>
+
         <small>New</small>
-        ${user?.role !== "student" ? `
-<button
-  class="delete-btn"
-  onclick="deleteNotice('${notice._id}')"
->
-  Delete
-</button>
-` : ""}
+
+        ${
+          user?.role !== "student"
+            ? `
+              <button
+                class="delete-btn"
+                onclick="deleteNotice('${notice._id}')"
+              >
+                Delete
+              </button>
+            `
+            : ""
+        }
       </div>
     `;
   });
-  async function deleteNotice(id) {
+}
+
+async function deleteNotice(id) {
   if (!confirm("Delete this notice?")) return;
 
-  await fetch(`${API}/notices/${id}`, {
+  const response = await fetch(`${API}/notices/${id}`, {
     method: "DELETE",
   });
 
-  loadNotices();
-}
+  if (response.ok) {
+    alert("Notice deleted successfully");
+    loadNotices();
+  } else {
+    alert("Failed to delete notice");
+  }
 }
 
 // MANAGE EVENTS
