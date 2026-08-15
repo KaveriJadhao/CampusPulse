@@ -1,10 +1,12 @@
 const express = require("express");
 const Attendance = require("../models/Attendance");
+const { verifyToken, requireRole } = require("../middleware/authMiddleware");
+const { isConnected, store } = require("../middleware/dbFallback");
 
 const router = express.Router();
 
-// Mark attendance
-router.post("/", async (req, res) => {
+// Mark attendance (Admin only)
+router.post("/", verifyToken, requireRole("forum-admin", "college-admin"), async (req, res) => {
   try {
     const { eventId, studentName, email, branch, year } = req.body;
 
@@ -14,9 +16,33 @@ router.post("/", async (req, res) => {
       });
     }
 
+    const cleanEmail = email.toLowerCase();
+
+    if (!isConnected()) {
+      const existing = store.attendance.find(
+        (a) => (a.eventId?._id || a.eventId) === eventId && a.email === cleanEmail
+      );
+      if (existing) {
+        return res.status(400).json({ message: "Attendance already marked" });
+      }
+      const eventObj = store.events.find((e) => e._id === eventId) || { _id: eventId, title: "Campus Event" };
+      const newAtt = {
+        _id: "att_" + Date.now(),
+        eventId: eventObj,
+        studentName,
+        email: cleanEmail,
+        branch,
+        year,
+        status: "Present",
+        createdAt: new Date()
+      };
+      store.attendance.unshift(newAtt);
+      return res.status(201).json({ message: "Attendance marked successfully", attendance: newAtt });
+    }
+
     const existingAttendance = await Attendance.findOne({
       eventId,
-      email: email.toLowerCase(),
+      email: cleanEmail,
     });
 
     if (existingAttendance) {
@@ -28,7 +54,7 @@ router.post("/", async (req, res) => {
     const attendance = new Attendance({
       eventId,
       studentName,
-      email: email.toLowerCase(),
+      email: cleanEmail,
       branch,
       year,
       status: "Present",
@@ -48,9 +74,12 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Get all attendance
-router.get("/", async (req, res) => {
+// Get all attendance (Authenticated)
+router.get("/", verifyToken, async (req, res) => {
   try {
+    if (!isConnected()) {
+      return res.status(200).json(store.attendance);
+    }
     const attendance = await Attendance.find()
       .populate("eventId")
       .sort({ createdAt: -1 });

@@ -1,12 +1,14 @@
 const express = require("express");
 const Registration = require("../models/Registration");
+const { verifyToken } = require("../middleware/authMiddleware");
+const { isConnected, store } = require("../middleware/dbFallback");
 
 const router = express.Router();
 
 // Register student for event
-router.post("/", async (req, res) => {
+router.post("/", verifyToken, async (req, res) => {
   try {
-    const { eventId, studentName, email, branch, year, paymentStatus } = req.body;
+    const { eventId, studentName, email, branch, year } = req.body;
 
     if (!eventId || !studentName || !email || !branch || !year) {
       return res.status(400).json({
@@ -15,6 +17,28 @@ router.post("/", async (req, res) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
+
+    if (!isConnected()) {
+      const existing = store.registrations.find(
+        (r) => (r.eventId?._id || r.eventId) === eventId && r.email === cleanEmail
+      );
+      if (existing) {
+        return res.status(400).json({ message: "You are already registered for this event" });
+      }
+      const eventObj = store.events.find((e) => e._id === eventId) || { _id: eventId, title: "Campus Event" };
+      const newReg = {
+        _id: "reg_" + Date.now(),
+        eventId: eventObj,
+        studentName: studentName.trim(),
+        email: cleanEmail,
+        branch,
+        year,
+        paymentStatus: "Paid",
+        createdAt: new Date()
+      };
+      store.registrations.unshift(newReg);
+      return res.status(201).json({ message: "Registration successful", registration: newReg });
+    }
 
     const existingRegistration = await Registration.findOne({
       eventId,
@@ -33,7 +57,7 @@ router.post("/", async (req, res) => {
       email: cleanEmail,
       branch,
       year,
-      paymentStatus: paymentStatus || "Pending",
+      paymentStatus: "Paid",
     });
 
     await newRegistration.save();
@@ -50,9 +74,12 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Get all registrations
-router.get("/", async (req, res) => {
+// Get all registrations (Authenticated)
+router.get("/", verifyToken, async (req, res) => {
   try {
+    if (!isConnected()) {
+      return res.status(200).json(store.registrations);
+    }
     const registrations = await Registration.find()
       .populate("eventId")
       .sort({ createdAt: -1 });

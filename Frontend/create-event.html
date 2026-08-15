@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CampusPulse | Dashboard</title>
-  <link rel="stylesheet" href="../css/style.css" />
+  <title>CampusPulse | Create Event</title>
+  <link rel="stylesheet" href="css/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <div class="app">
- 
-  <aside class="sidebar">
+  
+ <aside class="sidebar">
   <div class="logo">
     <div class="logo-icon">CP</div>
     <div class="logo-text">CampusPulse</div>
@@ -32,7 +32,6 @@
 </aside>
 
   <main class="main">
-
     <header class="topbar">
       <div class="topbar-left">
         <button class="mobile-menu-btn" onclick="toggleMenu()" aria-label="Toggle Navigation">☰</button>
@@ -42,71 +41,54 @@
         </div>
       </div>
     </header>
-
     <section class="welcome">
       <div>
-        <h1 id="welcomeText">Welcome back </h1>
-        <p>Here’s what’s happening in your campus today.</p>
-      </div>
-
-      <div class="date-box">
-         Today<br>
-        <span id="todayDate"></span>
+        <h1>Create New Event</h1>
+        <p>Post event details for students in one place.</p>
       </div>
     </section>
 
-    <section class="stats-grid">
-      <div class="stat-card">
-        <span></span>
-        <p>Total Events</p>
-        <h2 id="dashboardEvents">0</h2>
-      </div>
+    <section class="form-card">
+      <form id="eventForm">
+        <label>Event Name</label>
+        <input type="text" name="title" placeholder="AI Hackathon 2026" required>
 
-      <div class="stat-card">
-        <span></span>
-        <p>Total Registrations</p>
-        <h2 id="dashboardRegistrations">0</h2>
-      </div>
+        <label>Event Category</label>
+        <select name="category" required>
+          <option value="">Select category</option>
+          <option>Hackathon</option>
+          <option>Workshop</option>
+          <option>Cultural</option>
+          <option>Sports</option>
+          <option>Technical</option>
+        </select>
 
-      <div class="stat-card">
-        <span></span>
-        <p>Attendance Marked</p>
-        <h2 id="dashboardCertificates">0</h2>
-      </div>
+        <label>Department / Forum / Club</label>
+        <input type="text" name="organizer" placeholder="AIML Forum" required>
 
-      <div class="stat-card">
-        <span></span>
-        <p>Total Notices</p>
-        <h2 id="dashboardNotices">0</h2>
-      </div>
+        <label>Date</label>
+        <input type="date" name="date" required>
+
+        <label>Time</label>
+        <input type="time" name="time" required>
+
+        <label>Venue</label>
+        <input type="text" name="venue" placeholder="Seminar Hall 1" required>
+
+        <label>Registration Fee</label>
+        <input type="number" name="fee" placeholder="100">
+
+        <label>Event Description</label>
+        <textarea name="description" placeholder="Write event details..." required></textarea>
+
+        <label>Upload Poster</label>
+        <input type="file" name="poster">
+
+        <button type="submit">Publish Event</button>
+      </form>
     </section>
-
-    <section class="content-grid">
-
-      <div class="panel">
-        <div class="panel-head">
-          <h2>Upcoming Events</h2>
-          <a href="events.html">View All</a>
-        </div>
-
-        <div id="dashboardEventsList"></div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head">
-          <h2>Notice Board</h2>
-          <a href="notices.html">View All</a>
-        </div>
-
-        <div id="dashboardNoticesList"></div>
-      </div>
-
-    </section>
-
   </main>
-
 </div>
-
-<script src="../js/script.js"></script>
+<script src="js/script.js"></script>
 </body>
 </html>

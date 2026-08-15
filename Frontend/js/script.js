@@ -1,46 +1,69 @@
-const API = "https://campuspulse-yrrx.onrender.com/api";
+const API = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") 
+  ? "http://localhost:5000/api" 
+  : "https://campuspulse-yrrx.onrender.com/api";
+
+// AUTH HEADERS HELPER
+function getAuthHeaders() {
+  const token = localStorage.getItem("token");
+  const headers = { "Content-Type": "application/json" };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
 // LOGIN CHECK
-const user = JSON.parse(localStorage.getItem("user"));
+let user = null;
+try {
+  const storedUser = localStorage.getItem("user");
+  if (storedUser && storedUser !== "undefined" && storedUser !== "null") {
+    user = JSON.parse(storedUser);
+  }
+} catch (err) {
+  console.warn("Invalid session in localStorage, clearing...", err);
+  localStorage.removeItem("user");
+  localStorage.removeItem("token");
+}
+
 const currentPage = window.location.pathname;
-const currentFile = currentPage.split("/").pop();
+const rawFile = currentPage.split("/").pop();
+const currentRoute = rawFile.split("?")[0].split("#")[0].replace(/\.html$/, "").toLowerCase();
+
 const welcomeUser = document.getElementById("welcomeUser");
 
 if (welcomeUser && user) {
   welcomeUser.textContent = `Welcome, ${user.fullName}`;
 }
 
-// REDIRECT IF NOT LOGGED IN
-if (
-  !user &&
-  currentFile !== "index.html" &&
-  currentFile !== "signup.html"
-) {
+// REDIRECT IF NOT LOGGED IN ON PROTECTED PAGES
+const publicRoutes = ["index", "login", "signup", "home", ""];
+if (!user && !publicRoutes.includes(currentRoute)) {
   window.location.href = "index.html";
 }
 
 // PAGE PROTECTION
 if (user) {
   if (user.role === "student") {
-    const blockedStudentPages = [
-      "create-event.html",
-      "manage-events.html",
-      "edit-event.html",
-      "attendance.html",
-      "admin-dashboard.html",
+    const blockedStudentRoutes = [
+      "create-event",
+      "manage-events",
+      "edit-event",
+      "attendance",
+      "admin-dashboard",
     ];
 
-    if (blockedStudentPages.includes(currentFile)) {
+    if (blockedStudentRoutes.includes(currentRoute)) {
       alert("Access Denied");
       window.location.href = "dashboard.html";
     }
   }
 
   if (user.role === "forum-admin") {
-    const blockedForumAdminPages = [
-      "admin-dashboard.html",
+    const blockedForumAdminRoutes = [
+      "admin-dashboard",
     ];
 
-    if (blockedForumAdminPages.includes(currentFile)) {
+    if (blockedForumAdminRoutes.includes(currentRoute)) {
       alert("Access Denied");
       window.location.href = "dashboard.html";
     }
@@ -50,8 +73,10 @@ if (user) {
 // LOGOUT
 function logout() {
   localStorage.removeItem("user");
+  localStorage.removeItem("token");
   window.location.href = "index.html";
 }
+
 // CREATE EVENT
 const eventForm = document.getElementById("eventForm");
 
@@ -74,9 +99,7 @@ if (eventForm) {
 
     const response = await fetch(`${API}/events`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(eventData),
     });
 
@@ -84,7 +107,8 @@ if (eventForm) {
       alert("Event created successfully!");
       eventForm.reset();
     } else {
-      alert("Failed to create event");
+      const err = await response.json().catch(() => ({}));
+      alert(err.message || "Failed to create event");
     }
   });
 }
@@ -254,7 +278,7 @@ if (registerBtn) {
 }
 
 
-// REGISTRATION FORM WITH RAZORPAY PAYMENT
+// REGISTRATION FORM (DIRECT REGISTRATION - NO RAZORPAY)
 const registrationForm = document.getElementById("registrationForm");
 
 if (registrationForm) {
@@ -272,62 +296,7 @@ if (registrationForm) {
       paymentStatus: "Paid",
     };
 
-
-    // GET EVENT DETAILS
-    const eventResponse = await fetch(
-      `${API}/events/${currentEventId}`
-    );
-
-    const event = await eventResponse.json();
-
-    const amount = Number(event.fee || 0);
-
-    // FREE EVENT
-    if (amount === 0) {
-      await saveRegistration(registrationData);
-      return;
-    }
-
-    // CREATE PAYMENT ORDER
-    const orderResponse = await fetch(
-      `${API}/payment/create-order`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount: amount,
-        }),
-      }
-    );
-
-    const orderData = await orderResponse.json();
-
-    const options = {
-      key: orderData.key,
-      amount: orderData.order.amount,
-      currency: "INR",
-      name: "CampusPulse",
-      description: event.title,
-      order_id: orderData.order.id,
-
-      handler: async function () {
-        await saveRegistration(registrationData);
-      },
-
-      prefill: {
-        name: registrationData.studentName,
-        email: registrationData.email,
-      },
-
-      theme: {
-        color: "#6d28d9",
-      },
-    };
-
-    const razorpay = new Razorpay(options);
-    razorpay.open();
+    await saveRegistration(registrationData);
   });
 }
 
@@ -335,9 +304,7 @@ if (registrationForm) {
 async function saveRegistration(registrationData) {
   const response = await fetch(`${API}/registrations`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify(registrationData),
   });
 
@@ -362,13 +329,13 @@ if (signupForm) {
     const formData = new FormData(signupForm);
 
     const userData = {
-  fullName: formData.get("fullName"),
-  email: formData.get("email"),
-  password: formData.get("password"),
-  role: "student",
-  branch: formData.get("branch"),
-  year: formData.get("year"),
-  };
+      fullName: formData.get("fullName"),
+      email: formData.get("email"),
+      password: formData.get("password"),
+      role: "student",
+      branch: formData.get("branch"),
+      year: formData.get("year"),
+    };
 
     const response = await fetch(`${API}/users/signup`, {
       method: "POST",
@@ -381,8 +348,14 @@ if (signupForm) {
     const result = await response.json();
 
     if (response.ok) {
-      alert("Signup successful! Please login.");
-      window.location.href = "index.html";
+      if (result.token) {
+        localStorage.setItem("token", result.token);
+      }
+      if (result.user) {
+        localStorage.setItem("user", JSON.stringify(result.user));
+      }
+      alert("Signup successful! Welcome to CampusPulse.");
+      window.location.href = "dashboard.html";
     } else {
       alert(result.message || "Signup failed");
     }
@@ -415,6 +388,9 @@ if (loginForm) {
 
     if (response.ok) {
       localStorage.setItem("user", JSON.stringify(result.user));
+      if (result.token) {
+        localStorage.setItem("token", result.token);
+      }
 
       if (result.user.role === "student") {
         window.location.href = "dashboard.html";
@@ -513,6 +489,7 @@ async function deleteNotice(id) {
 
   const response = await fetch(`${API}/notices/${id}`, {
     method: "DELETE",
+    headers: getAuthHeaders(),
   });
 
   if (response.ok) {
@@ -572,6 +549,7 @@ async function deleteEvent(id) {
 
   const response = await fetch(`${API}/events/${id}`, {
     method: "DELETE",
+    headers: getAuthHeaders(),
   });
 
   if (response.ok) {
@@ -607,9 +585,7 @@ if (editEventForm) {
 
     const response = await fetch(`${API}/events/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(updatedData),
     });
 
@@ -650,7 +626,7 @@ if (totalEvents && totalRegistrations && registrationsList) {
 
 async function loadAdminDashboard() {
   const events = await (await fetch(`${API}/events`)).json();
-  const registrations = await (await fetch(`${API}/registrations`)).json();
+  const registrations = await (await fetch(`${API}/registrations`, { headers: getAuthHeaders() })).json();
 
   totalEvents.textContent = events.length;
   totalRegistrations.textContent = registrations.length;
@@ -697,7 +673,7 @@ async function loadAdminDashboard() {
 }
 
 async function downloadParticipants(eventName) {
-  const registrations = await (await fetch(`${API}/registrations`)).json();
+  const registrations = await (await fetch(`${API}/registrations`, { headers: getAuthHeaders() })).json();
 
   const filtered = registrations.filter(
     (reg) => reg.eventId?.title === eventName
@@ -732,7 +708,7 @@ if (myRegistrationsList) {
 }
 
 async function loadMyRegistrations() {
-  const registrations = await (await fetch(`${API}/registrations`)).json();
+  const registrations = await (await fetch(`${API}/registrations`, { headers: getAuthHeaders() })).json();
 
   myRegistrationsList.innerHTML = "";
 
@@ -773,7 +749,7 @@ if (attendanceForm) {
     const formData = new FormData(attendanceForm);
     const email = formData.get("email");
 
-    const registrations = await (await fetch(`${API}/registrations`)).json();
+    const registrations = await (await fetch(`${API}/registrations`, { headers: getAuthHeaders() })).json();
 
     const student = registrations.find(
       (reg) => reg.email === email && reg.eventId?._id === eventId
@@ -794,9 +770,7 @@ if (attendanceForm) {
 
     const response = await fetch(`${API}/attendance`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(attendanceData),
     });
 
@@ -827,7 +801,7 @@ if (attendanceList) {
 
 async function loadAttendance() {
   const attendance = await (
-    await fetch(`${API}/attendance`)
+    await fetch(`${API}/attendance`, { headers: getAuthHeaders() })
   ).json();
 
   attendanceList.innerHTML = "";
@@ -895,53 +869,42 @@ async function loadDashboardData() {
     );
   }
 
-  const events = await (
-    await fetch(`${API}/events`)
-  ).json();
+  const eventsData = await (await fetch(`${API}/events`)).json().catch(() => []);
+  const events = Array.isArray(eventsData) ? eventsData : [];
 
-  const registrations = await (
-    await fetch(`${API}/registrations`)
-  ).json();
+  const regData = await (await fetch(`${API}/registrations`, { headers: getAuthHeaders() })).json().catch(() => []);
+  const registrations = Array.isArray(regData) ? regData : [];
 
-  const attendance = await (
-    await fetch(`${API}/attendance`)
-  ).json();
+  const attData = await (await fetch(`${API}/attendance`, { headers: getAuthHeaders() })).json().catch(() => []);
+  const attendance = Array.isArray(attData) ? attData : [];
 
-  const notices = await (
-    await fetch(`${API}/notices`)
-  ).json();
+  const noticeData = await (await fetch(`${API}/notices`)).json().catch(() => []);
+  const notices = Array.isArray(noticeData) ? noticeData : [];
 
   const myRegistrations = user
-    ? registrations.filter(
-        (reg) => reg.email === user.email
-      )
+    ? registrations.filter((reg) => reg && reg.email === user.email)
     : registrations;
 
   const myAttendance = user
-    ? attendance.filter(
-        (item) => item.email === user.email
-      )
+    ? attendance.filter((item) => item && item.email === user.email)
     : attendance;
 
   dashboardEvents.textContent = events.length;
-  dashboardRegistrations.textContent =
-    myRegistrations.length;
-  dashboardCertificates.textContent =
-    myAttendance.length;
+  dashboardRegistrations.textContent = myRegistrations.length;
+  dashboardCertificates.textContent = myAttendance.length;
+
   // FORUM ADMIN DASHBOARD RESTRICTIONS
-if (user?.role === "forum-admin") {
-
-  if (dashboardRegistrations) {
-    dashboardRegistrations.parentElement.style.display = "none";
+  if (user?.role === "forum-admin") {
+    if (dashboardRegistrations) {
+      dashboardRegistrations.parentElement.style.display = "none";
+    }
+    if (dashboardCertificates) {
+      dashboardCertificates.parentElement.style.display = "none";
+    }
   }
 
-  if (dashboardCertificates) {
-    dashboardCertificates.parentElement.style.display = "none";
-  }
-}
   if (dashboardNotices) {
-    dashboardNotices.textContent =
-      notices.length;
+    dashboardNotices.textContent = notices.length;
   }
 
   // EVENTS
@@ -999,43 +962,8 @@ if (user?.role === "forum-admin") {
     });
   }
 }
-// ROLE-BASED SIDEBAR
+// SIDEBAR NAV LINK HANDLING - KEEP ALL LINKS INTACT FOR COMPLETE NAVBAR
 
-const manageEventsLink = document.getElementById("manageEventsLink");
-const createEventLink = document.getElementById("createEventLink");
-const adminDashboardLink = document.getElementById("adminDashboardLink");
-const attendanceLink = document.getElementById("attendanceLink");
-const eventsLink = document.getElementById("eventsLink");
-const registrationsLink = document.getElementById("registrationsLink");
-const certificatesLink = document.getElementById("certificatesLink");
-
-function removeElement(element) {
-  if (element) element.remove();
-}
-
-if (user) {
-  if (user.role === "student") {
-    removeElement(manageEventsLink);
-    removeElement(createEventLink);
-    removeElement(adminDashboardLink);
-    removeElement(attendanceLink);
-  }
-
-  if (user.role === "forum-admin") {
-    removeElement(eventsLink);
-    removeElement(registrationsLink);
-    removeElement(adminDashboardLink);
-    removeElement(certificatesLink);
-  }
-
-  if (user.role === "college-admin") {
-    removeElement(eventsLink);
-    removeElement(registrationsLink);
-    removeElement(manageEventsLink);
-    removeElement(createEventLink);
-    removeElement(certificatesLink);
-  }
-}
 
 // CERTIFICATE PAGE
 const studentName = document.getElementById("studentName");
@@ -1060,7 +988,7 @@ if (certificatesList) {
 
 async function loadCertificates() {
   const attendance = await (
-    await fetch(`${API}/attendance`)
+    await fetch(`${API}/attendance`, { headers: getAuthHeaders() })
   ).json();
 
   certificatesList.innerHTML = "";
@@ -1071,7 +999,7 @@ async function loadCertificates() {
 
   if (myCertificates.length === 0) {
     certificatesList.innerHTML = `
-      <div class="notice">
+      <div class="empty-state">
         <p>No certificates available yet.</p>
       </div>
     `;
@@ -1102,7 +1030,100 @@ async function loadCertificates() {
     `;
   });
 }
+// SIDEBAR TOGGLE & OVERLAY
 function toggleMenu() {
-  document.querySelector(".sidebar")
-          .classList.toggle("show");
+  const sidebar = document.querySelector(".sidebar");
+  if (!sidebar) return;
+
+  let overlay = document.querySelector(".sidebar-overlay");
+  if (!overlay) {
+    overlay = document.createElement("div");
+    overlay.className = "sidebar-overlay";
+    document.body.appendChild(overlay);
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("show");
+      overlay.classList.remove("show");
+    });
+  }
+
+  const isShowing = sidebar.classList.toggle("show");
+  if (isShowing) {
+    overlay.classList.add("show");
+  } else {
+    overlay.classList.remove("show");
+  }
 }
+
+// ROLE-BASED NAVBAR LINK VISIBILITY
+function applyRoleBasedNavbar() {
+  if (!user) return;
+
+  const manageEventsLink = document.getElementById("manageEventsLink");
+  const createEventLink = document.getElementById("createEventLink");
+  const adminDashboardLink = document.getElementById("adminDashboardLink");
+  const attendanceLink = document.getElementById("attendanceLink");
+  const eventsLink = document.getElementById("eventsLink");
+  const registrationsLink = document.getElementById("registrationsLink");
+  const certificatesLink = document.getElementById("certificatesLink");
+
+  function hide(el) {
+    if (el) {
+      el.classList.add("hidden");
+      el.style.setProperty("display", "none", "important");
+    }
+  }
+
+  function show(el) {
+    if (el) {
+      el.classList.remove("hidden");
+      el.style.removeProperty("display");
+    }
+  }
+
+  if (user.role === "student") {
+    // Hide Admin & In-charge management links for Students
+    hide(manageEventsLink);
+    hide(createEventLink);
+    hide(adminDashboardLink);
+    hide(attendanceLink);
+
+    show(eventsLink);
+    show(registrationsLink);
+    show(certificatesLink);
+  } else if (user.role === "forum-admin") {
+    // Forum Admin / In-charge
+    hide(adminDashboardLink);
+    hide(registrationsLink);
+    hide(certificatesLink);
+
+    show(manageEventsLink);
+    show(createEventLink);
+    show(attendanceLink);
+    show(eventsLink);
+  } else if (user.role === "college-admin") {
+    // College Admin
+    hide(manageEventsLink);
+    hide(createEventLink);
+    hide(eventsLink);
+    hide(registrationsLink);
+    hide(certificatesLink);
+
+    show(adminDashboardLink);
+    show(attendanceLink);
+  }
+}
+
+// AUTOMATIC ACTIVE NAVIGATION HIGHLIGHT & ROLE NAVBAR SETUP
+document.addEventListener("DOMContentLoaded", () => {
+  applyRoleBasedNavbar();
+
+  const links = document.querySelectorAll(".sidebar a");
+  links.forEach((link) => {
+    const href = link.getAttribute("href");
+    if (!href || href === "#") return;
+    const linkRoute = href.split("/").pop().split("?")[0].replace(/\.html$/, "").toLowerCase();
+    if (linkRoute === currentRoute) {
+      link.classList.add("active");
+    }
+  });
+});

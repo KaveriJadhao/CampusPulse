@@ -1,11 +1,19 @@
 const express = require("express");
 const Notice = require("../models/Notice");
-console.log("Notice Routes Loaded");
+const { verifyToken, requireRole } = require("../middleware/authMiddleware");
+const { isConnected, store } = require("../middleware/dbFallback");
+
 const router = express.Router();
 
-// Create notice
-router.post("/", async (req, res) => {
+// Create notice (Admin only)
+router.post("/", verifyToken, requireRole("forum-admin", "college-admin"), async (req, res) => {
   try {
+    if (!isConnected()) {
+      const newNot = { _id: "not_" + Date.now(), ...req.body, createdAt: new Date() };
+      store.notices.unshift(newNot);
+      return res.status(201).json({ message: "Notice created successfully", notice: newNot });
+    }
+
     const newNotice = new Notice(req.body);
     await newNotice.save();
 
@@ -21,9 +29,12 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Get all notices
+// Get all notices (Public)
 router.get("/", async (req, res) => {
   try {
+    if (!isConnected()) {
+      return res.status(200).json(store.notices);
+    }
     const notices = await Notice.find().sort({ createdAt: -1 });
     res.status(200).json(notices);
   } catch (error) {
@@ -33,9 +44,14 @@ router.get("/", async (req, res) => {
     });
   }
 });
-// DELETE NOTICE
-router.delete("/:id", async (req, res) => {
+
+// DELETE NOTICE (Admin only)
+router.delete("/:id", verifyToken, requireRole("forum-admin", "college-admin"), async (req, res) => {
   try {
+    if (!isConnected()) {
+      store.notices = store.notices.filter((n) => n._id !== req.params.id);
+      return res.json({ message: "Notice deleted successfully" });
+    }
     await Notice.findByIdAndDelete(req.params.id);
 
     res.json({
@@ -48,4 +64,5 @@ router.delete("/:id", async (req, res) => {
     });
   }
 });
+
 module.exports = router;

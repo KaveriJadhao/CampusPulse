@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CampusPulse | Events</title>
-  <link rel="stylesheet" href="../css/style.css" />
+  <title>CampusPulse | Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <div class="app">
-
+ 
   <aside class="sidebar">
   <div class="logo">
     <div class="logo-icon">CP</div>
@@ -44,48 +45,68 @@
 
     <section class="welcome">
       <div>
-        <h1>Explore Events</h1>
-        <p>Find hackathons, workshops, competitions, seminars and more.</p>
+        <h1 id="welcomeText">Welcome back </h1>
+        <p>Here’s what’s happening in your campus today.</p>
+      </div>
+
+      <div class="date-box">
+         Today<br>
+        <span id="todayDate"></span>
       </div>
     </section>
 
-    <section class="filter-tabs">
-      <button onclick="filterEvents('All')">All</button>
-      <button onclick="filterEvents('Hackathon')">Hackathon</button>
-      <button onclick="filterEvents('Workshop')">Workshop</button>
-      <button onclick="filterEvents('Cultural')">Cultural</button>
-      <button onclick="filterEvents('Sports')">Sports</button>
-      <button onclick="filterEvents('Technical')">Technical</button>
+    <section class="stats-grid">
+      <div class="stat-card">
+        <span></span>
+        <p>Total Events</p>
+        <h2 id="dashboardEvents">0</h2>
+      </div>
+
+      <div class="stat-card">
+        <span></span>
+        <p>Total Registrations</p>
+        <h2 id="dashboardRegistrations">0</h2>
+      </div>
+
+      <div class="stat-card">
+        <span></span>
+        <p>Attendance Marked</p>
+        <h2 id="dashboardCertificates">0</h2>
+      </div>
+
+      <div class="stat-card">
+        <span></span>
+        <p>Total Notices</p>
+        <h2 id="dashboardNotices">0</h2>
+      </div>
     </section>
 
-    <section class="filter-tabs">
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Search events..."
-      />
+    <section class="content-grid">
 
-      <select id="departmentFilter">
-        <option value="All">All Departments</option>
-        <option value="CSE">CSE</option>
-        <option value="IT">IT</option>
-        <option value="AIML">AIML</option>
-        <option value="AIDS">AIDS</option>
-        <option value="ENTC">ENTC</option>
-        <option value="Mechanical">Mechanical</option>
-        <option value="Civil">Civil</option>
-        <option value="Electrical">Electrical</option>
-      </select>
-    </section>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Upcoming Events</h2>
+          <a href="events.html">View All</a>
+        </div>
 
-    <section class="events-grid" id="eventsContainer">
-      <!-- Events will load dynamically from MongoDB -->
+        <div id="dashboardEventsList"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Notice Board</h2>
+          <a href="notices.html">View All</a>
+        </div>
+
+        <div id="dashboardNoticesList"></div>
+      </div>
+
     </section>
 
   </main>
 
 </div>
 
-<script src="../js/script.js"></script>
+<script src="js/script.js"></script>
 </body>
 </html>

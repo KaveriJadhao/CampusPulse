@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CampusPulse | Certificate</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="certificate-page">
+
+  <div class="certificate" id="certificateBox">
+
+    <div class="certificate-top">
+      <div class="cert-logo">CP</div>
+      <div>
+        <h4>CampusPulse</h4>
+      </div>
+    </div>
+
+    <h1>Certificate of Participation</h1>
+
+    <p class="cert-line">This certificate is proudly presented to</p>
+
+    <h2 id="studentName">Student Name</h2>
+
+    <p class="cert-line">for successfully participating in</p>
+
+    <h3 id="eventName">Event Name</h3>
+
+    <p class="cert-desc">
+      Organized through CampusPulse Event Management System.
+    </p>
+
+    <div class="certificate-footer">
+      <div>
+        <hr>
+        <p>Event Coordinator</p>
+      </div>
+
+      <div>
+        <hr>
+        <p>Principal / Authority</p>
+      </div>
+    </div>
+
+    <p class="cert-id">
+      Certificate ID: CP-2026-<span id="certificateId"></span>
+    </p>
+
+  </div>
+
+  <button onclick="downloadCertificate()" class="download-btn">
+    Download Certificate
+  </button>
+
+</div>
+
+<script src="js/script.js"></script>
+
+<script>
+  document.getElementById("certificateId").textContent =
+    Math.floor(100000 + Math.random() * 900000);
+
+  function downloadCertificate() {
+    window.print();
+  }
+</script>
+
+</body>
+</html>
