@@ -1,6 +1,14 @@
 const API = "https://campuspulse-yrrx.onrender.com/api";
 // LOGIN CHECK
 const user = JSON.parse(localStorage.getItem("user"));
+
+function getAuthHeaders() {
+  const headers = { "Content-Type": "application/json" };
+  if (user && user.token) {
+    headers["Authorization"] = `Bearer ${user.token}`;
+  }
+  return headers;
+}
 const currentPage = window.location.pathname;
 const currentFile = currentPage.split("/").pop();
 const welcomeUser = document.getElementById("welcomeUser");
@@ -72,19 +80,23 @@ if (eventForm) {
       description: formData.get("description"),
     };
 
-    const response = await fetch(`${API}/events`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(eventData),
-    });
+    try {
+      const response = await fetch(`${API}/events`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(eventData),
+      });
 
-    if (response.ok) {
-      alert("Event created successfully!");
-      eventForm.reset();
-    } else {
-      alert("Failed to create event");
+      const result = await response.json().catch(() => ({}));
+
+      if (response.ok) {
+        alert("Event created successfully!");
+        eventForm.reset();
+      } else {
+        alert(result.message || "Failed to create event");
+      }
+    } catch (err) {
+      alert("Network error: Failed to create event");
     }
   });
 }
@@ -452,20 +464,24 @@ if (noticeForm) {
       description: formData.get("description"),
     };
 
-    const response = await fetch(`${API}/notices`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(noticeData),
-    });
+    try {
+      const response = await fetch(`${API}/notices`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(noticeData),
+      });
 
-    if (response.ok) {
-      alert("Notice posted successfully!");
-      noticeForm.reset();
-      loadNotices();
-    } else {
-      alert("Failed to post notice");
+      const result = await response.json().catch(() => ({}));
+
+      if (response.ok) {
+        alert("Notice posted successfully!");
+        noticeForm.reset();
+        loadNotices();
+      } else {
+        alert(result.message || "Failed to post notice");
+      }
+    } catch (err) {
+      alert("Network error: Failed to post notice");
     }
   });
 }
@@ -475,53 +491,69 @@ if (noticesList) {
 }
 
 async function loadNotices() {
-  const response = await fetch(`${API}/notices`);
-  const notices = await response.json();
+  try {
+    const response = await fetch(`${API}/notices`);
+    const notices = await response.json();
 
-  noticesList.innerHTML = "";
+    noticesList.innerHTML = "";
 
-  notices.forEach((notice) => {
-    noticesList.innerHTML += `
-      <div class="notice">
-        <span>📢</span>
+    if (!Array.isArray(notices) || notices.length === 0) {
+      noticesList.innerHTML = "<p>No notices available.</p>";
+      return;
+    }
 
-        <p>
-          <strong>${notice.title}</strong><br>
-          ${notice.department} • ${notice.category}<br>
-          ${notice.description}
-        </p>
+    notices.forEach((notice) => {
+      noticesList.innerHTML += `
+        <div class="notice">
+          <span>📢</span>
 
-        <small>New</small>
+          <p>
+            <strong>${notice.title}</strong><br>
+            ${notice.department} • ${notice.category}<br>
+            ${notice.description}
+          </p>
 
-        ${
-          user?.role !== "student"
-            ? `
-              <button
-                class="delete-btn"
-                onclick="deleteNotice('${notice._id}')"
-              >
-                Delete
-              </button>
-            `
-            : ""
-        }
-      </div>
-    `;
-  });
+          <small>New</small>
+
+          ${
+            user?.role !== "student"
+              ? `
+                <button
+                  class="delete-btn"
+                  onclick="deleteNotice('${notice._id}')"
+                >
+                  Delete
+                </button>
+              `
+              : ""
+          }
+        </div>
+      `;
+    });
+  } catch (err) {
+    console.error("Failed to load notices:", err);
+  }
 }
 
 async function deleteNotice(id) {
   if (!confirm("Delete this notice?")) return;
 
-  const response = await fetch(`${API}/notices/${id}`, {
-    method: "DELETE",
-  });
+  try {
+    const response = await fetch(`${API}/notices/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    });
 
-  if (response.ok) {
-    alert("Notice deleted successfully");
-    loadNotices();
-  } else {
-    alert("Failed to delete notice");
+    const result = await response.json().catch(() => ({}));
+
+    if (response.ok) {
+      alert("Notice deleted successfully");
+      loadNotices();
+    } else {
+      alert(result.message || "Failed to delete notice");
+    }
+  } catch (err) {
+    alert("Network error: Failed to delete notice");
   }
 }
 // MANAGE EVENTS PAGE
@@ -572,15 +604,22 @@ async function deleteEvent(id) {
 
   if (!confirmDelete) return;
 
-  const response = await fetch(`${API}/events/${id}`, {
-    method: "DELETE",
-  });
+  try {
+    const response = await fetch(`${API}/events/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    });
 
-  if (response.ok) {
-    alert("Event deleted successfully");
-    loadManageEvents();
-  } else {
-    alert("Failed to delete event");
+    const result = await response.json().catch(() => ({}));
+
+    if (response.ok) {
+      alert("Event deleted successfully");
+      loadManageEvents();
+    } else {
+      alert(result.message || "Failed to delete event");
+    }
+  } catch (err) {
+    alert("Network error: Failed to delete event");
   }
 }
 
@@ -607,19 +646,23 @@ if (editEventForm) {
       description: formData.get("description"),
     };
 
-    const response = await fetch(`${API}/events/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedData),
-    });
+    try {
+      const response = await fetch(`${API}/events/${id}`, {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(updatedData),
+      });
 
-    if (response.ok) {
-      alert("Event updated successfully!");
-      window.location.href = "manage-events.html";
-    } else {
-      alert("Failed to update event");
+      const result = await response.json().catch(() => ({}));
+
+      if (response.ok) {
+        alert("Event updated successfully!");
+        window.location.href = "manage-events.html";
+      } else {
+        alert(result.message || "Failed to update event");
+      }
+    } catch (err) {
+      alert("Network error: Failed to update event");
     }
   });
 }
@@ -794,21 +837,23 @@ if (attendanceForm) {
       year: student.year,
     };
 
-    const response = await fetch(`${API}/attendance`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(attendanceData),
-    });
+    try {
+      const response = await fetch(`${API}/attendance`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(attendanceData),
+      });
 
-    const result = await response.json();
+      const result = await response.json().catch(() => ({}));
 
-    if (response.ok) {
-      alert("Attendance marked successfully!");
-      attendanceForm.reset();
-    } else {
-      alert(result.message || "Attendance failed");
+      if (response.ok) {
+        alert("Attendance marked successfully!");
+        attendanceForm.reset();
+      } else {
+        alert(result.message || "Attendance failed");
+      }
+    } catch (err) {
+      alert("Network error: Failed to mark attendance");
     }
   });
 }
@@ -828,32 +873,34 @@ if (attendanceList) {
 }
 
 async function loadAttendance() {
-  const attendance = await (
-    await fetch(`${API}/attendance`)
-  ).json();
+  try {
+    const res = await fetch(`${API}/attendance`, { headers: getAuthHeaders() });
+    const attendance = await res.json();
 
-  attendanceList.innerHTML = "";
+    attendanceList.innerHTML = "";
 
-  if (attendance.length === 0) {
-    attendanceList.innerHTML =
-      "<p>No attendance records found.</p>";
-    return;
+    if (!Array.isArray(attendance) || attendance.length === 0) {
+      attendanceList.innerHTML = "<p>No attendance recorded.</p>";
+      return;
+    }
+
+    attendance.forEach((item) => {
+      attendanceList.innerHTML += `
+        <div class="notice">
+          <span>✅</span>
+          <p>
+            <strong>${item.studentName}</strong><br>
+            ${item.email}<br>
+            ${item.branch} • ${item.year}<br>
+            Event: ${item.eventId?.title || "Event"}
+          </p>
+          <small>${item.status || "Present"}</small>
+        </div>
+      `;
+    });
+  } catch (err) {
+    console.error("Failed to load attendance:", err);
   }
-
-  attendance.forEach((item) => {
-    attendanceList.innerHTML += `
-      <div class="notice">
-        <span>✅</span>
-        <p>
-          <strong>${item.studentName}</strong><br>
-          ${item.email}<br>
-          ${item.branch} • ${item.year}<br>
-          Event: ${item.eventId?.title || "Event"}
-        </p>
-        <small>${item.status || "Present"}</small>
-      </div>
-    `;
-  });
 }
 
 // DYNAMIC DASHBOARD
