@@ -464,6 +464,12 @@ if (noticeForm) {
       description: formData.get("description"),
     };
 
+    if (user && !user.token) {
+      alert("Your session has expired. Please log out and log in again to post notices.");
+      window.location.href = "index.html";
+      return;
+    }
+
     try {
       const response = await fetch(`${API}/notices`, {
         method: "POST",
