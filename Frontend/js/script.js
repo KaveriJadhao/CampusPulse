@@ -414,7 +414,9 @@ if (loginForm) {
     const result = await response.json();
 
     if (response.ok) {
-      localStorage.setItem("user", JSON.stringify(result.user));
+      const userData = { ...result.user };
+      if (result.token) userData.token = result.token;
+      localStorage.setItem("user", JSON.stringify(userData));
 
       if (result.user.role === "student") {
         window.location.href = "dashboard.html";
@@ -874,74 +876,83 @@ if (dashboardEvents) {
 async function loadDashboardData() {
   if (user) {
     if (dashboardUserName) {
-      dashboardUserName.textContent =
-        `Welcome, ${user.fullName}`;
+      dashboardUserName.textContent = `Welcome, ${user.fullName}`;
     }
 
     if (welcomeText) {
-      welcomeText.textContent =
-        `Welcome back, ${user.fullName} 👋`;
+      welcomeText.textContent = `Welcome back, ${user.fullName} 👋`;
     }
   }
 
   if (todayDate) {
-    todayDate.textContent = new Date().toLocaleDateString(
-      "en-IN",
-      {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }
-    );
+    todayDate.textContent = new Date().toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
   }
 
-  const events = await (
-    await fetch(`${API}/events`)
-  ).json();
+  let events = [];
+  let registrations = [];
+  let attendance = [];
+  let notices = [];
 
-  const registrations = await (
-    await fetch(`${API}/registrations`)
-  ).json();
+  try {
+    const authHeaders = (user && user.token) ? { Authorization: `Bearer ${user.token}` } : {};
 
-  const attendance = await (
-    await fetch(`${API}/attendance`)
-  ).json();
+    const [eventsRes, regsRes, attRes, noticesRes] = await Promise.allSettled([
+      fetch(`${API}/events`).then((r) => r.json()),
+      fetch(`${API}/registrations`, { headers: authHeaders }).then((r) => r.json()),
+      fetch(`${API}/attendance`, { headers: authHeaders }).then((r) => r.json()),
+      fetch(`${API}/notices`).then((r) => r.json()),
+    ]);
 
-  const notices = await (
-    await fetch(`${API}/notices`)
-  ).json();
+    if (eventsRes.status === "fulfilled" && Array.isArray(eventsRes.value)) {
+      events = eventsRes.value;
+    }
+    if (regsRes.status === "fulfilled" && Array.isArray(regsRes.value)) {
+      registrations = regsRes.value;
+    }
+    if (attRes.status === "fulfilled" && Array.isArray(attRes.value)) {
+      attendance = attRes.value;
+    }
+    if (noticesRes.status === "fulfilled" && Array.isArray(noticesRes.value)) {
+      notices = noticesRes.value;
+    }
+  } catch (err) {
+    console.error("Dashboard fetch error:", err);
+  }
 
   const myRegistrations = user
-    ? registrations.filter(
-        (reg) => reg.email === user.email
-      )
+    ? registrations.filter((reg) => reg.email === user.email)
     : registrations;
 
   const myAttendance = user
-    ? attendance.filter(
-        (item) => item.email === user.email
-      )
+    ? attendance.filter((item) => item.email === user.email)
     : attendance;
 
-  dashboardEvents.textContent = events.length;
-  dashboardRegistrations.textContent =
-    myRegistrations.length;
-  dashboardCertificates.textContent =
-    myAttendance.length;
-  // FORUM ADMIN DASHBOARD RESTRICTIONS
-if (user?.role === "forum-admin") {
-
+  if (dashboardEvents) {
+    dashboardEvents.textContent = events.length;
+  }
   if (dashboardRegistrations) {
-    dashboardRegistrations.parentElement.style.display = "none";
+    dashboardRegistrations.textContent = myRegistrations.length;
+  }
+  if (dashboardCertificates) {
+    dashboardCertificates.textContent = myAttendance.length;
+  }
+  if (dashboardNotices) {
+    dashboardNotices.textContent = notices.length;
   }
 
-  if (dashboardCertificates) {
-    dashboardCertificates.parentElement.style.display = "none";
-  }
-}
-  if (dashboardNotices) {
-    dashboardNotices.textContent =
-      notices.length;
+  // FORUM ADMIN DASHBOARD RESTRICTIONS
+  if (user?.role === "forum-admin") {
+    if (dashboardRegistrations) {
+      dashboardRegistrations.parentElement.style.display = "none";
+    }
+
+    if (dashboardCertificates) {
+      dashboardCertificates.parentElement.style.display = "none";
+    }
   }
 
   // EVENTS
