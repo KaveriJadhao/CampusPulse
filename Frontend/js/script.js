@@ -700,27 +700,49 @@ if (totalEvents && totalRegistrations && registrationsList) {
 }
 
 async function loadAdminDashboard() {
-  const events = await (await fetch(`${API}/events`)).json();
-  const registrations = await (await fetch(`${API}/registrations`)).json();
+  let events = [];
+  let registrations = [];
 
-  totalEvents.textContent = events.length;
-  totalRegistrations.textContent = registrations.length;
+  try {
+    const [eventsRes, regsRes] = await Promise.allSettled([
+      fetch(`${API}/events`).then((r) => r.json()),
+      fetch(`${API}/registrations`, { headers: getAuthHeaders() }).then((r) => r.json()),
+    ]);
 
-  registrationsList.innerHTML = "";
+    if (eventsRes.status === "fulfilled" && Array.isArray(eventsRes.value)) {
+      events = eventsRes.value;
+    }
+    if (regsRes.status === "fulfilled" && Array.isArray(regsRes.value)) {
+      registrations = regsRes.value;
+    }
+  } catch (err) {
+    console.error("Admin dashboard fetch error:", err);
+  }
 
-  registrations.forEach((reg) => {
-    registrationsList.innerHTML += `
-      <div class="notice">
-        <span>👤</span>
-        <p>
-          <strong>${reg.studentName}</strong><br>
-          ${reg.branch} • ${reg.year}<br>
-          Event: ${reg.eventId?.title || "Event"}
-        </p>
-        <small>${reg.email}</small>
-      </div>
-    `;
-  });
+  if (totalEvents) totalEvents.textContent = events.length;
+  if (totalRegistrations) totalRegistrations.textContent = registrations.length;
+
+  if (registrationsList) {
+    registrationsList.innerHTML = "";
+
+    if (registrations.length === 0) {
+      registrationsList.innerHTML = "<p>No registrations recorded yet.</p>";
+    } else {
+      registrations.forEach((reg) => {
+        registrationsList.innerHTML += `
+          <div class="notice">
+            <span>👤</span>
+            <p>
+              <strong>${reg.studentName}</strong><br>
+              ${reg.branch} • ${reg.year}<br>
+              Event: ${reg.eventId?.title || "Event"}
+            </p>
+            <small>${reg.email}</small>
+          </div>
+        `;
+      });
+    }
+  }
 
   if (eventStats) {
     const eventCounts = {};
@@ -732,47 +754,62 @@ async function loadAdminDashboard() {
 
     eventStats.innerHTML = "";
 
-    for (const eventName in eventCounts) {
-      eventStats.innerHTML += `
-        <div class="stat-card">
-          <h3>${eventName}</h3>
-          <p>Total Participants: ${eventCounts[eventName]}</p>
+    if (Object.keys(eventCounts).length === 0) {
+      eventStats.innerHTML = "<p>No event registration statistics available.</p>";
+    } else {
+      for (const eventName in eventCounts) {
+        eventStats.innerHTML += `
+          <div class="stat-card">
+            <h3>${eventName}</h3>
+            <p>Total Participants: ${eventCounts[eventName]}</p>
 
-          <button onclick="downloadParticipants('${eventName}')">
-            Download CSV
-          </button>
-        </div>
-      `;
+            <button onclick="downloadParticipants('${eventName.replace(/'/g, "\\'")}')">
+              Download CSV
+            </button>
+          </div>
+        `;
+      }
     }
   }
 }
 
 async function downloadParticipants(eventName) {
-  const registrations = await (await fetch(`${API}/registrations`)).json();
+  try {
+    const res = await fetch(`${API}/registrations`, { headers: getAuthHeaders() });
+    const registrations = await res.json();
 
-  const filtered = registrations.filter(
-    (reg) => reg.eventId?.title === eventName
-  );
+    if (!Array.isArray(registrations)) {
+      alert("Failed to download participants data");
+      return;
+    }
 
-  let csv = "Name,Email,Branch,Year\n";
+    const filtered = registrations.filter(
+      (reg) => (reg.eventId?.title || "Unknown Event") === eventName
+    );
 
-  filtered.forEach((reg) => {
-    csv += `${reg.studentName},${reg.email},${reg.branch},${reg.year}\n`;
-  });
+    let csv = "Name,Email,Branch,Year\n";
 
-  const blob = new Blob([csv], {
-    type: "text/csv",
-  });
+    filtered.forEach((reg) => {
+      csv += `"${reg.studentName || ""}","${reg.email || ""}","${reg.branch || ""}","${reg.year || ""}"\n`;
+    });
 
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement("a");
+    const blob = new Blob([csv], {
+      type: "text/csv;charset=utf-8;",
+    });
 
-  a.href = url;
-  a.download = `${eventName}-participants.csv`;
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
 
-  a.click();
+    a.href = url;
+    a.download = `${eventName.replace(/[^a-zA-Z0-9_-]/g, "_")}-participants.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 
-  window.URL.revokeObjectURL(url);
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    alert("Error generating CSV export");
+  }
 }
 
 // MY REGISTRATIONS
@@ -783,34 +820,44 @@ if (myRegistrationsList) {
 }
 
 async function loadMyRegistrations() {
-  const registrations = await (await fetch(`${API}/registrations`)).json();
+  try {
+    const res = await fetch(`${API}/registrations`, { headers: getAuthHeaders() });
+    const registrations = await res.json();
 
-  myRegistrationsList.innerHTML = "";
+    myRegistrationsList.innerHTML = "";
 
-  const userRegistrations = user
-    ? registrations.filter((reg) => reg.email === user.email)
-    : registrations;
+    if (!Array.isArray(registrations)) {
+      myRegistrationsList.innerHTML = "<p>No registrations yet.</p>";
+      return;
+    }
 
-  if (userRegistrations.length === 0) {
-    myRegistrationsList.innerHTML = "<p>No registrations yet.</p>";
-    return;
-  }
+    const userRegistrations = user
+      ? registrations.filter((reg) => reg.email === user.email)
+      : registrations;
 
-  userRegistrations.forEach((reg) => {
-    myRegistrationsList.innerHTML += `
-      <div class="event-item">
-        <div class="event-img purple">✓</div>
+    if (userRegistrations.length === 0) {
+      myRegistrationsList.innerHTML = "<p>No registrations yet.</p>";
+      return;
+    }
 
-        <div>
-          <h3>${reg.eventId?.title || "Event"}</h3>
-          <p>${reg.eventId?.organizer || "Organizer"}</p>
-          <small>${reg.eventId?.date || ""} • ${reg.eventId?.venue || ""}</small>
+    userRegistrations.forEach((reg) => {
+      myRegistrationsList.innerHTML += `
+        <div class="event-item">
+          <div class="event-img purple">✓</div>
+
+          <div>
+            <h3>${reg.eventId?.title || "Event"}</h3>
+            <p>${reg.eventId?.organizer || "Organizer"}</p>
+            <small>${reg.eventId?.date || ""} • ${reg.eventId?.venue || ""}</small>
+          </div>
+
+          <button>Registered</button>
         </div>
-
-        <button>Registered</button>
-      </div>
-    `;
-  });
+      `;
+    });
+  } catch (err) {
+    console.error("Failed to load my registrations:", err);
+  }
 }
 
 // MARK ATTENDANCE
@@ -1123,48 +1170,60 @@ if (certificatesList) {
 }
 
 async function loadCertificates() {
-  const attendance = await (
-    await fetch(`${API}/attendance`)
-  ).json();
+  try {
+    const res = await fetch(`${API}/attendance`, { headers: getAuthHeaders() });
+    const attendance = await res.json();
 
-  certificatesList.innerHTML = "";
+    certificatesList.innerHTML = "";
 
-  const myCertificates = attendance.filter(
-    (item) => item.email === user?.email
-  );
-
-  if (myCertificates.length === 0) {
-    certificatesList.innerHTML = `
-      <div class="notice">
-        <p>No certificates available yet.</p>
-      </div>
-    `;
-    return;
-  }
-
-  myCertificates.forEach((item) => {
-    certificatesList.innerHTML += `
-      <div class="event-item">
-        <div class="event-img purple">🏅</div>
-
-        <div>
-          <h3>${item.eventId?.title || "Event"}</h3>
-          <p>Certificate Available</p>
+    if (!Array.isArray(attendance)) {
+      certificatesList.innerHTML = `
+        <div class="notice">
+          <p>No certificates available yet.</p>
         </div>
+      `;
+      return;
+    }
 
-        <a
-          href="certificate.html?name=${encodeURIComponent(
-            item.studentName
-          )}&event=${encodeURIComponent(
-            item.eventId?.title || "Event"
-          )}"
-          class="view-btn"
-        >
-          View Certificate
-        </a>
-      </div>
-    `;
-  });
+    const myCertificates = attendance.filter(
+      (item) => item.email === user?.email
+    );
+
+    if (myCertificates.length === 0) {
+      certificatesList.innerHTML = `
+        <div class="notice">
+          <p>No certificates available yet.</p>
+        </div>
+      `;
+      return;
+    }
+
+    myCertificates.forEach((item) => {
+      certificatesList.innerHTML += `
+        <div class="event-item">
+          <div class="event-img purple">🏅</div>
+
+          <div>
+            <h3>${item.eventId?.title || "Event"}</h3>
+            <p>Certificate Available</p>
+          </div>
+
+          <a
+            href="certificate.html?name=${encodeURIComponent(
+              item.studentName
+            )}&event=${encodeURIComponent(
+              item.eventId?.title || "Event"
+            )}"
+            class="view-btn"
+          >
+            View Certificate
+          </a>
+        </div>
+      `;
+    });
+  } catch (err) {
+    console.error("Failed to load certificates:", err);
+  }
 }
 function toggleMenu() {
   document.querySelector(".sidebar")
