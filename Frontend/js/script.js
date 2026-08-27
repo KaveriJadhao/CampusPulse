@@ -1083,8 +1083,8 @@ async function loadDashboardData() {
     dashboardNotices.textContent = notices.length;
   }
 
-  // FORUM ADMIN DASHBOARD RESTRICTIONS
-  if (user?.role === "forum-admin") {
+  // ADMIN DASHBOARD RESTRICTIONS (Forum Admin & College Admin)
+  if (user?.role === "forum-admin" || user?.role === "college-admin") {
     if (dashboardRegistrations) {
       dashboardRegistrations.parentElement.style.display = "none";
     }
