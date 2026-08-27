@@ -974,28 +974,20 @@ textarea:focus {
   }
 
   .sidebar a {
-    display: none !important;
-  }
-
- .sidebar a#dashboardLink,
-.sidebar a#eventsLink,
-.sidebar a#noticesLink,
-.sidebar a#registrationsLink,
-.sidebar a#certificatesLink,
-.sidebar a#logoutLink,
-.sidebar a[onclick="logout()"] {
     display: inline-flex !important;
     width: auto !important;
     font-size: 13px !important;
-    padding: 8px 11px !important;
+    padding: 8px 12px !important;
     margin: 3px !important;
     border-radius: 999px;
     background: rgba(255,255,255,0.08);
+    color: #ffffff;
   }
 
   .sidebar a.active {
     background: var(--accent) !important;
     color: var(--primary) !important;
+    font-weight: 700 !important;
   }
 
   .main {

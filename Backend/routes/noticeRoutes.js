@@ -1,10 +1,11 @@
 const express = require("express");
 const Notice = require("../models/Notice");
-console.log("Notice Routes Loaded");
+const { verifyToken, requireRole } = require("../middleware/authMiddleware");
+
 const router = express.Router();
 
-// Create notice
-router.post("/", async (req, res) => {
+// Create notice (Forum Admin & College Admin)
+router.post("/", verifyToken, requireRole("forum-admin", "college-admin"), async (req, res) => {
   try {
     const newNotice = new Notice(req.body);
     await newNotice.save();
@@ -21,7 +22,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Get all notices
+// Get all notices (Public)
 router.get("/", async (req, res) => {
   try {
     const notices = await Notice.find().sort({ createdAt: -1 });
@@ -33,8 +34,9 @@ router.get("/", async (req, res) => {
     });
   }
 });
-// DELETE NOTICE
-router.delete("/:id", async (req, res) => {
+
+// DELETE NOTICE (Forum Admin & College Admin)
+router.delete("/:id", verifyToken, requireRole("forum-admin", "college-admin"), async (req, res) => {
   try {
     await Notice.findByIdAndDelete(req.params.id);
 
@@ -48,4 +50,5 @@ router.delete("/:id", async (req, res) => {
     });
   }
 });
+
 module.exports = router;

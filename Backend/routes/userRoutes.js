@@ -1,7 +1,23 @@
 const express = require("express");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const router = express.Router();
+
+// Helper to generate JWT Token
+const generateToken = (user) => {
+  return jwt.sign(
+    {
+      _id: user._id,
+      email: user.email,
+      role: user.role,
+      fullName: user.fullName,
+    },
+    process.env.JWT_SECRET || "supersecretjwtkey_campuspulse_2026",
+    { expiresIn: "7d" }
+  );
+};
 
 // Signup - only students can signup publicly
 router.post("/signup", async (req, res) => {
@@ -14,7 +30,9 @@ router.post("/signup", async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ email });
+    const cleanEmail = email.trim().toLowerCase();
+
+    const existingUser = await User.findOne({ email: cleanEmail });
 
     if (existingUser) {
       return res.status(400).json({
@@ -22,19 +40,24 @@ router.post("/signup", async (req, res) => {
       });
     }
 
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     const newUser = new User({
-      fullName,
-      email,
-      password,
+      fullName: fullName.trim(),
+      email: cleanEmail,
+      password: hashedPassword,
       branch,
       year,
       role: "student",
     });
 
     await newUser.save();
+    const token = generateToken(newUser);
 
     res.status(201).json({
       message: "Signup successful",
+      token,
       user: {
         _id: newUser._id,
         fullName: newUser.fullName,
@@ -63,7 +86,8 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email, password });
+    const cleanEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: cleanEmail });
 
     if (!user) {
       return res.status(400).json({
@@ -71,8 +95,30 @@ router.post("/login", async (req, res) => {
       });
     }
 
+    let isMatch = false;
+    if (user.password.startsWith("$2a$") || user.password.startsWith("$2b$")) {
+      isMatch = await bcrypt.compare(password, user.password);
+    } else {
+      // Legacy plaintext password check & auto-upgrade to bcrypt hash
+      isMatch = user.password === password;
+      if (isMatch) {
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+        await user.save();
+      }
+    }
+
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    const token = generateToken(user);
+
     res.status(200).json({
       message: "Login successful",
+      token,
       user: {
         _id: user._id,
         fullName: user.fullName,

@@ -171,6 +171,15 @@ let selectedCategory = "All";
 function filterEvents(category = selectedCategory) {
   selectedCategory = category;
 
+  // Toggle active class on category buttons
+  document.querySelectorAll(".filter-tabs button").forEach((btn) => {
+    if (btn.textContent.trim().toLowerCase() === category.toLowerCase()) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+
   let filtered = [...allEvents];
 
   const searchText = searchInput?.value.trim().toLowerCase() || "";
@@ -284,83 +293,113 @@ if (registrationForm) {
       paymentStatus: "Paid",
     };
 
+    try {
+      // GET EVENT DETAILS
+      const eventResponse = await fetch(
+        `${API}/events/${currentEventId}`
+      );
 
-    // GET EVENT DETAILS
-    const eventResponse = await fetch(
-      `${API}/events/${currentEventId}`
-    );
+      const event = await eventResponse.json();
 
-    const event = await eventResponse.json();
+      const amount = Number(event.fee || 0);
 
-    const amount = Number(event.fee || 0);
-
-    // FREE EVENT
-    if (amount === 0) {
-      await saveRegistration(registrationData);
-      return;
-    }
-
-    // CREATE PAYMENT ORDER
-    const orderResponse = await fetch(
-      `${API}/payment/create-order`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount: amount,
-        }),
-      }
-    );
-
-    const orderData = await orderResponse.json();
-
-    const options = {
-      key: orderData.key,
-      amount: orderData.order.amount,
-      currency: "INR",
-      name: "CampusPulse",
-      description: event.title,
-      order_id: orderData.order.id,
-
-      handler: async function () {
+      // FREE EVENT
+      if (amount === 0) {
         await saveRegistration(registrationData);
-      },
+        return;
+      }
 
-      prefill: {
-        name: registrationData.studentName,
-        email: registrationData.email,
-      },
+      // CREATE PAYMENT ORDER
+      const orderResponse = await fetch(
+        `${API}/payment/create-order`,
+        {
+          method: "POST",
+          headers: getAuthHeaders(),
+          body: JSON.stringify({
+            amount: amount,
+          }),
+        }
+      );
 
-      theme: {
-        color: "#6d28d9",
-      },
-    };
+      const orderData = await orderResponse.json();
 
-    const razorpay = new Razorpay(options);
-    razorpay.open();
+      if (!orderData.success) {
+        alert(orderData.message || "Failed to create payment order");
+        return;
+      }
+
+      const options = {
+        key: orderData.key,
+        amount: orderData.order.amount,
+        currency: "INR",
+        name: "CampusPulse",
+        description: event.title,
+        order_id: orderData.order.id,
+
+        handler: async function (paymentResponse) {
+          try {
+            // Verify payment signature
+            const verifyRes = await fetch(`${API}/payment/verify-payment`, {
+              method: "POST",
+              headers: getAuthHeaders(),
+              body: JSON.stringify({
+                razorpay_order_id: paymentResponse.razorpay_order_id,
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                razorpay_signature: paymentResponse.razorpay_signature,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (verifyData.success) {
+              await saveRegistration(registrationData);
+            } else {
+              alert("Payment verification failed. Please contact support.");
+            }
+          } catch (err) {
+            alert("Error verifying payment signature");
+          }
+        },
+
+        prefill: {
+          name: registrationData.studentName,
+          email: registrationData.email,
+        },
+
+        theme: {
+          color: "#003366",
+        },
+      };
+
+      const razorpay = new Razorpay(options);
+      razorpay.open();
+    } catch (err) {
+      console.error("Registration/Payment Error:", err);
+      alert("An error occurred during registration");
+    }
   });
 }
 
 // SAVE REGISTRATION
 async function saveRegistration(registrationData) {
-  const response = await fetch(`${API}/registrations`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(registrationData),
-  });
+  try {
+    const response = await fetch(`${API}/registrations`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(registrationData),
+    });
 
-  const result = await response.json();
+    const result = await response.json();
 
-  if (response.ok) {
-    alert("Registration Successful!");
-    registrationForm.reset();
-    window.location.href = "my-registrations.html";
-  } else {
-    alert(result.message || "Registration Failed");
+    if (response.ok) {
+      alert("Registration Successful!");
+      if (registrationForm) registrationForm.reset();
+      window.location.href = "my-registrations.html";
+    } else {
+      alert(result.message || "Registration Failed");
+    }
+  } catch (err) {
+    alert("Network error: Failed to save registration");
   }
 }
 
@@ -1226,6 +1265,30 @@ async function loadCertificates() {
   }
 }
 function toggleMenu() {
-  document.querySelector(".sidebar")
-          .classList.toggle("show");
+  const sidebar = document.querySelector(".sidebar");
+  if (sidebar) {
+    sidebar.classList.toggle("show");
+  }
 }
+
+// DYNAMIC ACTIVE LINK HIGHLIGHTING
+document.addEventListener("DOMContentLoaded", () => {
+  const currentFileName = window.location.pathname.split("/").pop();
+  
+  if (currentFileName) {
+    document.querySelectorAll(".sidebar a").forEach((link) => {
+      const href = link.getAttribute("href");
+      if (href && href === currentFileName) {
+        link.classList.add("active");
+      }
+    });
+  }
+
+  // Highlight first category button on events page
+  if (currentFileName === "events.html") {
+    const allCategoryBtn = document.querySelector(".filter-tabs button");
+    if (allCategoryBtn) {
+      allCategoryBtn.classList.add("active");
+    }
+  }
+});

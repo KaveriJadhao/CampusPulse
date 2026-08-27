@@ -1,10 +1,11 @@
 const express = require("express");
 const Registration = require("../models/Registration");
+const { verifyToken } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// Register student for event
-router.post("/", async (req, res) => {
+// Register student for event (Logged-in users)
+router.post("/", verifyToken, async (req, res) => {
   try {
     const { eventId, studentName, email, branch, year, paymentStatus } = req.body;
 
@@ -50,8 +51,8 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Get all registrations
-router.get("/", async (req, res) => {
+// Get all registrations (Logged-in users)
+router.get("/", verifyToken, async (req, res) => {
   try {
     const registrations = await Registration.find()
       .populate("eventId")

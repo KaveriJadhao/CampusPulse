@@ -1,10 +1,11 @@
 const express = require("express");
 const Attendance = require("../models/Attendance");
+const { verifyToken } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// Mark attendance
-router.post("/", async (req, res) => {
+// Mark attendance (Logged-in users)
+router.post("/", verifyToken, async (req, res) => {
   try {
     const { eventId, studentName, email, branch, year } = req.body;
 
@@ -14,9 +15,11 @@ router.post("/", async (req, res) => {
       });
     }
 
+    const cleanEmail = email.trim().toLowerCase();
+
     const existingAttendance = await Attendance.findOne({
       eventId,
-      email: email.toLowerCase(),
+      email: cleanEmail,
     });
 
     if (existingAttendance) {
@@ -27,8 +30,8 @@ router.post("/", async (req, res) => {
 
     const attendance = new Attendance({
       eventId,
-      studentName,
-      email: email.toLowerCase(),
+      studentName: studentName.trim(),
+      email: cleanEmail,
       branch,
       year,
       status: "Present",
@@ -48,8 +51,8 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Get all attendance
-router.get("/", async (req, res) => {
+// Get all attendance (Logged-in users)
+router.get("/", verifyToken, async (req, res) => {
   try {
     const attendance = await Attendance.find()
       .populate("eventId")
