@@ -486,6 +486,9 @@ const noticeForm = document.getElementById("noticeForm");
 const noticesList = document.getElementById("noticesList");
 const noticePostSection = document.getElementById("noticePostSection");
 
+let allNotices = [];
+let editingNoticeId = null;
+
 if (noticePostSection && user?.role === "student") {
   noticePostSection.style.display = "none";
 }
@@ -504,29 +507,40 @@ if (noticeForm) {
     };
 
     if (user && !user.token) {
-      alert("Your session has expired. Please log out and log in again to post notices.");
+      alert("Your session has expired. Please log out and log in again to post or edit notices.");
       window.location.href = "index.html";
       return;
     }
 
     try {
-      const response = await fetch(`${API}/notices`, {
-        method: "POST",
-        headers: getAuthHeaders(),
-        body: JSON.stringify(noticeData),
-      });
+      let response;
+      if (editingNoticeId) {
+        // UPDATE EXISTING NOTICE
+        response = await fetch(`${API}/notices/${editingNoticeId}`, {
+          method: "PUT",
+          headers: getAuthHeaders(),
+          body: JSON.stringify(noticeData),
+        });
+      } else {
+        // CREATE NEW NOTICE
+        response = await fetch(`${API}/notices`, {
+          method: "POST",
+          headers: getAuthHeaders(),
+          body: JSON.stringify(noticeData),
+        });
+      }
 
       const result = await response.json().catch(() => ({}));
 
       if (response.ok) {
-        alert("Notice posted successfully!");
-        noticeForm.reset();
+        alert(editingNoticeId ? "Notice updated successfully!" : "Notice posted successfully!");
+        cancelNoticeEdit();
         loadNotices();
       } else {
-        alert(result.message || "Failed to post notice");
+        alert(result.message || (editingNoticeId ? "Failed to update notice" : "Failed to post notice"));
       }
     } catch (err) {
-      alert("Network error: Failed to post notice");
+      alert("Network error: Failed to save notice");
     }
   });
 }
@@ -544,8 +558,11 @@ async function loadNotices() {
 
     if (!Array.isArray(notices) || notices.length === 0) {
       noticesList.innerHTML = "<p>No notices available.</p>";
+      allNotices = [];
       return;
     }
+
+    allNotices = notices;
 
     notices.forEach((notice) => {
       noticesList.innerHTML += `
@@ -563,12 +580,23 @@ async function loadNotices() {
           ${
             user?.role !== "student"
               ? `
-                <button
-                  class="delete-btn"
-                  onclick="deleteNotice('${notice._id}')"
-                >
-                  Delete
-                </button>
+                <div class="notice-actions" style="margin-top: 10px; display: flex; gap: 8px;">
+                  <button
+                    type="button"
+                    class="edit-btn"
+                    onclick="editNotice('${notice._id}')"
+                    style="background: #003366; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    class="delete-btn"
+                    onclick="deleteNotice('${notice._id}')"
+                  >
+                    Delete
+                  </button>
+                </div>
               `
               : ""
           }
@@ -578,6 +606,53 @@ async function loadNotices() {
   } catch (err) {
     console.error("Failed to load notices:", err);
   }
+}
+
+function editNotice(id) {
+  const notice = allNotices.find((n) => n._id === id);
+  if (!notice || !noticeForm) return;
+
+  editingNoticeId = id;
+
+  const titleInput = noticeForm.querySelector('[name="title"]');
+  const categorySelect = noticeForm.querySelector('[name="category"]');
+  const departmentInput = noticeForm.querySelector('[name="department"]');
+  const descriptionTextarea = noticeForm.querySelector('[name="description"]');
+  const submitBtn = noticeForm.querySelector('button[type="submit"]');
+
+  if (titleInput) titleInput.value = notice.title || "";
+  if (categorySelect) categorySelect.value = notice.category || "";
+  if (departmentInput) departmentInput.value = notice.department || "";
+  if (descriptionTextarea) descriptionTextarea.value = notice.description || "";
+
+  if (submitBtn) submitBtn.textContent = "Update Notice";
+
+  let cancelBtn = document.getElementById("cancelNoticeEditBtn");
+  if (!cancelBtn) {
+    cancelBtn = document.createElement("button");
+    cancelBtn.id = "cancelNoticeEditBtn";
+    cancelBtn.type = "button";
+    cancelBtn.textContent = "Cancel Edit";
+    cancelBtn.style.cssText = "background: #6c757d; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-left: 10px;";
+    cancelBtn.onclick = cancelNoticeEdit;
+    submitBtn.parentElement.appendChild(cancelBtn);
+  }
+
+  if (noticePostSection) {
+    noticePostSection.scrollIntoView({ behavior: "smooth" });
+  }
+}
+
+function cancelNoticeEdit() {
+  editingNoticeId = null;
+  if (!noticeForm) return;
+
+  noticeForm.reset();
+  const submitBtn = noticeForm.querySelector('button[type="submit"]');
+  if (submitBtn) submitBtn.textContent = "Post Notice";
+
+  const cancelBtn = document.getElementById("cancelNoticeEditBtn");
+  if (cancelBtn) cancelBtn.remove();
 }
 
 async function deleteNotice(id) {
