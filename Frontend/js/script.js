@@ -840,18 +840,29 @@ async function loadAdminDashboard() {
     registrationsList.innerHTML = "";
 
     if (registrations.length === 0) {
-      registrationsList.innerHTML = "<p>No registrations recorded yet.</p>";
+      registrationsList.innerHTML = "<p style='color: #64748b; padding: 12px 0;'>No registrations recorded yet.</p>";
     } else {
       registrations.forEach((reg) => {
+        const initials = (reg.studentName || "U")
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase();
+
         registrationsList.innerHTML += `
-          <div class="notice">
-            <span>👤</span>
-            <p>
-              <strong>${reg.studentName}</strong><br>
-              ${reg.branch} • ${reg.year}<br>
-              Event: ${reg.eventId?.title || "Event"}
-            </p>
-            <small>${reg.email}</small>
+          <div class="registration-row">
+            <div class="reg-user-info">
+              <div class="reg-avatar">${initials}</div>
+              <div class="reg-details">
+                <h4>${reg.studentName || "Student"}</h4>
+                <p>${reg.branch || "Branch"} • ${reg.year || "Year"}</p>
+                <span class="reg-event-badge">Event: ${reg.eventId?.title || "Event"}</span>
+              </div>
+            </div>
+            <div class="reg-email-tag">
+              ${reg.email || ""}
+            </div>
           </div>
         `;
       });
@@ -869,16 +880,17 @@ async function loadAdminDashboard() {
     eventStats.innerHTML = "";
 
     if (Object.keys(eventCounts).length === 0) {
-      eventStats.innerHTML = "<p>No event registration statistics available.</p>";
+      eventStats.innerHTML = "<p style='color: #64748b; padding: 12px 0;'>No event registration statistics available.</p>";
     } else {
       for (const eventName in eventCounts) {
         eventStats.innerHTML += `
-          <div class="stat-card">
-            <h3>${eventName}</h3>
-            <p>Total Participants: ${eventCounts[eventName]}</p>
-
-            <button onclick="downloadParticipants('${eventName.replace(/'/g, "\\'")}')">
-              Download CSV
+          <div class="event-stat-card">
+            <div class="event-stat-header">
+              <h3>${eventName}</h3>
+              <span class="participant-count-badge">${eventCounts[eventName]} Registered</span>
+            </div>
+            <button type="button" onclick="downloadParticipants('${eventName.replace(/'/g, "\\'")}')">
+              Download CSV Report
             </button>
           </div>
         `;
