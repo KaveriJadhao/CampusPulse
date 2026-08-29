@@ -1043,9 +1043,10 @@ if (attendanceBtn && user?.role === "student") {
 }
 
 
-// ATTENDANCE LIST (GROUPED BY EVENT)
+// ATTENDANCE LIST (GROUPED & DROPDOWN ACCORDIONS)
 const attendanceList = document.getElementById("attendanceList");
 const attendanceSearchInput = document.getElementById("attendanceSearchInput");
+const eventAttendanceSelect = document.getElementById("eventAttendanceSelect");
 
 let allAttendanceRecords = [];
 
@@ -1054,6 +1055,12 @@ if (attendanceList) {
 
   if (attendanceSearchInput) {
     attendanceSearchInput.addEventListener("input", () => {
+      renderGroupedAttendance();
+    });
+  }
+
+  if (eventAttendanceSelect) {
+    eventAttendanceSelect.addEventListener("change", () => {
       renderGroupedAttendance();
     });
   }
@@ -1070,9 +1077,36 @@ async function loadAttendance() {
       allAttendanceRecords = attendance;
     }
 
+    populateEventDropdown();
     renderGroupedAttendance();
   } catch (err) {
     console.error("Failed to load attendance:", err);
+  }
+}
+
+function populateEventDropdown() {
+  if (!eventAttendanceSelect) return;
+
+  const currentVal = eventAttendanceSelect.value || "All";
+  eventAttendanceSelect.innerHTML = `<option value="All">📌 All Events (Dropdown)</option>`;
+
+  const uniqueEvents = {};
+  allAttendanceRecords.forEach((item) => {
+    const eventId = item.eventId?._id || item.eventId || "other";
+    const eventTitle = item.eventId?.title || "Event Attendance";
+    if (!uniqueEvents[eventId]) {
+      uniqueEvents[eventId] = { id: eventId, title: eventTitle, count: 0 };
+    }
+    uniqueEvents[eventId].count += 1;
+  });
+
+  for (const id in uniqueEvents) {
+    const ev = uniqueEvents[id];
+    const opt = document.createElement("option");
+    opt.value = id;
+    opt.textContent = `🎯 ${ev.title} (${ev.count} Present)`;
+    if (id === currentVal) opt.selected = true;
+    eventAttendanceSelect.appendChild(opt);
   }
 }
 
@@ -1082,10 +1116,21 @@ function renderGroupedAttendance() {
   attendanceList.innerHTML = "";
 
   const query = attendanceSearchInput?.value.trim().toLowerCase() || "";
+  const selectedEventId = eventAttendanceSelect?.value || "All";
 
   let filtered = allAttendanceRecords;
+
+  // Filter by selected event dropdown
+  if (selectedEventId !== "All") {
+    filtered = filtered.filter((item) => {
+      const id = item.eventId?._id || item.eventId || "other";
+      return id === selectedEventId;
+    });
+  }
+
+  // Filter by search query
   if (query) {
-    filtered = allAttendanceRecords.filter((item) => {
+    filtered = filtered.filter((item) => {
       const eventTitle = (item.eventId?.title || "").toLowerCase();
       const studentName = (item.studentName || "").toLowerCase();
       const email = (item.email || "").toLowerCase();
@@ -1102,7 +1147,7 @@ function renderGroupedAttendance() {
   if (filtered.length === 0) {
     attendanceList.innerHTML = `
       <div class="panel">
-        <p style="color: #64748b; padding: 10px 0;">No attendance records found.</p>
+        <p style="color: #64748b; padding: 12px 0;">No attendance records found for this selection.</p>
       </div>
     `;
     return;
@@ -1119,6 +1164,7 @@ function renderGroupedAttendance() {
 
     if (!grouped[eventId]) {
       grouped[eventId] = {
+        id: eventId,
         title: eventTitle,
         date: eventDate,
         venue: eventVenue,
@@ -1160,24 +1206,44 @@ function renderGroupedAttendance() {
       .join("");
 
     attendanceList.innerHTML += `
-      <div class="event-attendance-group">
-        <div class="event-attendance-header">
+      <div class="event-attendance-group" id="group_${group.id}">
+        <div class="event-attendance-header" onclick="toggleEventAttendance('${group.id}')" style="cursor: pointer;">
           <div>
-            <h3>${group.title}</h3>
-            <p class="event-attendance-meta">
+            <h3 style="display: flex; align-items: center; gap: 8px;">
+              <span id="chevron_${group.id}" class="chevron-icon">▼</span>
+              ${group.title}
+            </h3>
+            <p class="event-attendance-meta" style="margin-left: 24px;">
               ${group.date ? `📅 ${group.date}` : ""} ${group.venue ? `• 📍 ${group.venue}` : ""} ${group.category ? `• 🏷️ ${group.category}` : ""}
             </p>
           </div>
-          <span class="attendance-count-badge">
-            ${count} ${count === 1 ? "Student" : "Students"} Present
-          </span>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="attendance-count-badge">
+              ${count} ${count === 1 ? "Student" : "Students"} Present
+            </span>
+            <span style="color: #64748b; font-size: 13px; font-weight: 600;">(Click to Toggle)</span>
+          </div>
         </div>
 
-        <div class="event-attendees-list">
+        <div class="event-attendees-list" id="list_${group.id}">
           ${attendeesHtml}
         </div>
       </div>
     `;
+  }
+}
+
+function toggleEventAttendance(eventId) {
+  const listEl = document.getElementById(`list_${eventId}`);
+  const chevronEl = document.getElementById(`chevron_${eventId}`);
+  if (!listEl) return;
+
+  if (listEl.style.display === "none") {
+    listEl.style.display = "flex";
+    if (chevronEl) chevronEl.textContent = "▼";
+  } else {
+    listEl.style.display = "none";
+    if (chevronEl) chevronEl.textContent = "▶";
   }
 }
 

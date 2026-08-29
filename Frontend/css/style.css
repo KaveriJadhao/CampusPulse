@@ -603,6 +603,14 @@ textarea:focus {
   font-weight: 800;
   color: var(--primary);
   margin-bottom: 3px;
+  user-select: none;
+}
+
+.chevron-icon {
+  font-size: 13px;
+  color: var(--primary);
+  display: inline-block;
+  transition: transform 0.2s ease;
 }
 
 .event-attendance-meta {

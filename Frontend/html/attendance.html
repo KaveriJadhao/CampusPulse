@@ -40,16 +40,20 @@
     <section class="welcome">
       <div>
         <h1>Attendance Records</h1>
-        <p>View attendees organized by event.</p>
+        <p>Select an event from the dropdown or click any event card to view attendees.</p>
       </div>
     </section>
 
-    <section class="filter-tabs" style="margin-top: 20px; margin-bottom: 24px;">
+    <section class="filter-tabs" style="margin-top: 20px; margin-bottom: 24px; display: flex; gap: 14px; flex-wrap: wrap;">
+      <select id="eventAttendanceSelect" style="min-width: 260px; padding: 12px 18px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 14px; font-weight: 700; background: #ffffff; color: var(--primary); cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+        <option value="All">📌 All Events (Dropdown)</option>
+      </select>
+
       <input
         type="text"
         id="attendanceSearchInput"
-        placeholder="Search by event, student name, or branch..."
-        style="max-width: 450px;"
+        placeholder="Search student name, email, or branch..."
+        style="flex: 1; min-width: 250px;"
       />
     </section>
 
