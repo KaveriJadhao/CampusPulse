@@ -58,7 +58,10 @@ router.get("/", verifyToken, async (req, res) => {
       .populate("eventId")
       .sort({ createdAt: -1 });
 
-    res.status(200).json(registrations);
+    // Exclude orphaned registrations whose event was deleted
+    const validRegistrations = registrations.filter((reg) => reg.eventId && reg.eventId._id);
+
+    res.status(200).json(validRegistrations);
   } catch (error) {
     res.status(500).json({
       message: "Failed to fetch registrations",

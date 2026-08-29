@@ -1209,12 +1209,16 @@ async function loadMyRegistrations() {
         .filter(Boolean)
     );
 
-    if (userRegistrations.length === 0) {
+    const validUserRegistrations = userRegistrations.filter(
+      (reg) => reg.eventId && typeof reg.eventId === "object" && reg.eventId.title
+    );
+
+    if (validUserRegistrations.length === 0) {
       myRegistrationsList.innerHTML = "<p style='color: #64748b; padding: 14px 0;'>No event registrations found.</p>";
       return;
     }
 
-    userRegistrations.forEach((reg) => {
+    validUserRegistrations.forEach((reg) => {
       const evId = typeof reg.eventId === "object" ? reg.eventId?._id : reg.eventId;
       const isAttended = attendedEventIds.has(evId);
 
@@ -1665,9 +1669,10 @@ async function loadDashboardData() {
       .filter(Boolean)
   );
 
-  // Active registrations (pending attendance)
+  // Active registrations (pending attendance) for valid existing events
   const pendingAttendanceRegistrations = myRegistrations.filter((reg) => {
-    const evId = typeof reg.eventId === "object" ? reg.eventId?._id : reg.eventId;
+    if (!reg.eventId || typeof reg.eventId !== "object" || !reg.eventId.title) return false;
+    const evId = reg.eventId._id;
     return !attendedEventIds.has(evId);
   });
 

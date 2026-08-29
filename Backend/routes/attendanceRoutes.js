@@ -58,7 +58,10 @@ router.get("/", verifyToken, async (req, res) => {
       .populate("eventId")
       .sort({ createdAt: -1 });
 
-    res.status(200).json(attendance);
+    // Exclude orphaned records whose event was deleted
+    const validAttendance = attendance.filter((item) => item.eventId && item.eventId._id);
+
+    res.status(200).json(validAttendance);
   } catch (error) {
     res.status(500).json({
       message: "Failed to fetch attendance",
