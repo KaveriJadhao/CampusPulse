@@ -567,39 +567,38 @@ async function loadNotices() {
     notices.forEach((notice) => {
       noticesList.innerHTML += `
         <div class="notice">
-          <span>📢</span>
+          <span class="notice-icon">📢</span>
 
-          <p>
-            <strong>${notice.title}</strong><br>
-            ${notice.department} • ${notice.category}<br>
-            ${notice.description}
-          </p>
+          <div class="notice-body">
+            <strong style="color: var(--primary); font-size: 16px;">${notice.title}</strong>
+            <p style="color: #64748b; font-size: 13px; margin: 3px 0 6px 0;">${notice.department} • ${notice.category}</p>
+            <p style="color: #334155; font-size: 14px; line-height: 1.5;">${notice.description}</p>
+
+            ${
+              user?.role !== "student"
+                ? `
+                  <div class="notice-actions" style="margin-top: 12px; display: flex; gap: 8px;">
+                    <button
+                      type="button"
+                      class="edit-btn"
+                      onclick="editNotice('${notice._id}')"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      class="delete-btn"
+                      onclick="deleteNotice('${notice._id}')"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                `
+                : ""
+            }
+          </div>
 
           <small>New</small>
-
-          ${
-            user?.role !== "student"
-              ? `
-                <div class="notice-actions" style="margin-top: 10px; display: flex; gap: 8px;">
-                  <button
-                    type="button"
-                    class="edit-btn"
-                    onclick="editNotice('${notice._id}')"
-                    style="background: #003366; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    class="delete-btn"
-                    onclick="deleteNotice('${notice._id}')"
-                  >
-                    Delete
-                  </button>
-                </div>
-              `
-              : ""
-          }
         </div>
       `;
     });
