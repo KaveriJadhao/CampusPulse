@@ -926,6 +926,19 @@ if (totalEvents && totalRegistrations && registrationsList) {
 }
 
 async function loadAdminDashboard() {
+  const adminPageHeading = document.getElementById("adminPageHeading");
+  const adminPageSubheading = document.getElementById("adminPageSubheading");
+
+  if (user?.role === "forum-admin") {
+    if (adminPageHeading) adminPageHeading.textContent = "Event Analytics & Reports";
+    if (adminPageSubheading) adminPageSubheading.textContent = "Track forum event registrations, participants, and reports.";
+    document.title = "CampusPulse | Event Analytics";
+  } else {
+    if (adminPageHeading) adminPageHeading.textContent = "Admin Dashboard";
+    if (adminPageSubheading) adminPageSubheading.textContent = "Track college events, registrations, and reports.";
+    document.title = "CampusPulse | Admin Dashboard";
+  }
+
   try {
     const [eventsRes, regsRes] = await Promise.allSettled([
       fetch(`${API}/events`).then((r) => r.json()),
@@ -1648,6 +1661,9 @@ if (user) {
     removeElement(eventsLink);
     removeElement(registrationsLink);
     removeElement(certificatesLink);
+    if (adminDashboardLink) {
+      adminDashboardLink.textContent = "Event Analytics";
+    }
   }
 
   if (user.role === "college-admin") {
