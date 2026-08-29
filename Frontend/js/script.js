@@ -1180,37 +1180,68 @@ if (myRegistrationsList) {
 
 async function loadMyRegistrations() {
   try {
-    const res = await fetch(`${API}/registrations`, { headers: getAuthHeaders() });
-    const registrations = await res.json();
+    const [regsRes, attRes] = await Promise.allSettled([
+      fetch(`${API}/registrations`, { headers: getAuthHeaders() }).then((r) => r.json()),
+      fetch(`${API}/attendance`, { headers: getAuthHeaders() }).then((r) => r.json()),
+    ]);
+
+    const registrations = regsRes.status === "fulfilled" && Array.isArray(regsRes.value) ? regsRes.value : [];
+    const attendance = attRes.status === "fulfilled" && Array.isArray(attRes.value) ? attRes.value : [];
 
     myRegistrationsList.innerHTML = "";
 
-    if (!Array.isArray(registrations)) {
-      myRegistrationsList.innerHTML = "<p>No registrations yet.</p>";
-      return;
-    }
+    const userEmail = (user?.email || "").trim().toLowerCase();
 
     const userRegistrations = user
-      ? registrations.filter((reg) => reg.email === user.email)
+      ? registrations.filter((reg) => (reg.email || "").trim().toLowerCase() === userEmail)
       : registrations;
 
+    const userAttendance = user
+      ? attendance.filter((att) => (att.email || "").trim().toLowerCase() === userEmail)
+      : attendance;
+
+    const attendedEventIds = new Set(
+      userAttendance
+        .map((item) => {
+          if (!item.eventId) return "";
+          return typeof item.eventId === "object" ? item.eventId._id : item.eventId;
+        })
+        .filter(Boolean)
+    );
+
     if (userRegistrations.length === 0) {
-      myRegistrationsList.innerHTML = "<p>No registrations yet.</p>";
+      myRegistrationsList.innerHTML = "<p style='color: #64748b; padding: 14px 0;'>No event registrations found.</p>";
       return;
     }
 
     userRegistrations.forEach((reg) => {
-      myRegistrationsList.innerHTML += `
-        <div class="event-item">
-          <div class="event-img purple">✓</div>
+      const evId = typeof reg.eventId === "object" ? reg.eventId?._id : reg.eventId;
+      const isAttended = attendedEventIds.has(evId);
 
-          <div>
-            <h3>${reg.eventId?.title || "Event"}</h3>
-            <p>${reg.eventId?.organizer || "Organizer"}</p>
-            <small>${reg.eventId?.date || ""} • ${reg.eventId?.venue || ""}</small>
+      myRegistrationsList.innerHTML += `
+        <div class="event-item" style="grid-template-columns: 70px 1fr auto; gap: 16px; align-items: center;">
+          <div class="event-img" style="background: ${isAttended ? '#059669' : '#003366'}; color: white; width: 65px; height: 60px; border-radius: 12px; font-size: 16px; font-weight: 800;">
+            ${isAttended ? "✓" : "REG"}
           </div>
 
-          <button>Registered</button>
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <h3 style="margin: 0; color: var(--primary);">${reg.eventId?.title || "Event"}</h3>
+              <span style="font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: ${isAttended ? '#ecfdf5' : '#eff6ff'}; color: ${isAttended ? '#059669' : '#003366'}; border: 1px solid ${isAttended ? '#a7f3d0' : '#bfdbfe'};">
+                ${isAttended ? "✅ Attended" : "📌 Registered (Upcoming)"}
+              </span>
+            </div>
+            <p style="color: #64748b; font-size: 13px; margin: 4px 0;">${reg.eventId?.organizer || "Organizer"}</p>
+            <small style="color: #94a3b8; font-size: 12.5px;">📅 ${reg.eventId?.date || ""} • 📍 ${reg.eventId?.venue || ""}</small>
+          </div>
+
+          <div>
+            ${
+              isAttended
+                ? `<a href="certificates.html" style="display: inline-block; padding: 9px 16px; font-size: 13px; font-weight: 700; background: #059669; color: white; border-radius: 8px; text-decoration: none;">Get Certificate 🎓</a>`
+                : `<button type="button" style="background: var(--primary); color: white; padding: 9px 16px; font-size: 13px; font-weight: 700; border-radius: 8px;" disabled>Registered</button>`
+            }
+          </div>
         </div>
       `;
     });
@@ -1614,19 +1645,37 @@ async function loadDashboardData() {
     console.error("Dashboard fetch error:", err);
   }
 
+  const userEmail = (user?.email || "").trim().toLowerCase();
+
   const myRegistrations = user
-    ? registrations.filter((reg) => reg.email === user.email)
+    ? registrations.filter((reg) => (reg.email || "").trim().toLowerCase() === userEmail)
     : registrations;
 
   const myAttendance = user
-    ? attendance.filter((item) => item.email === user.email)
+    ? attendance.filter((item) => (item.email || "").trim().toLowerCase() === userEmail)
     : attendance;
+
+  // Set of event IDs where student's attendance has been marked
+  const attendedEventIds = new Set(
+    myAttendance
+      .map((item) => {
+        if (!item.eventId) return "";
+        return typeof item.eventId === "object" ? item.eventId._id : item.eventId;
+      })
+      .filter(Boolean)
+  );
+
+  // Active registrations (pending attendance)
+  const pendingAttendanceRegistrations = myRegistrations.filter((reg) => {
+    const evId = typeof reg.eventId === "object" ? reg.eventId?._id : reg.eventId;
+    return !attendedEventIds.has(evId);
+  });
 
   if (dashboardEvents) {
     dashboardEvents.textContent = events.length;
   }
   if (dashboardRegistrations) {
-    dashboardRegistrations.textContent = myRegistrations.length;
+    dashboardRegistrations.textContent = pendingAttendanceRegistrations.length;
   }
   if (dashboardCertificates) {
     dashboardCertificates.textContent = myAttendance.length;
