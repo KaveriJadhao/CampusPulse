@@ -1043,11 +1043,20 @@ if (attendanceBtn && user?.role === "student") {
 }
 
 
-// ATTENDANCE LIST
+// ATTENDANCE LIST (GROUPED BY EVENT)
 const attendanceList = document.getElementById("attendanceList");
+const attendanceSearchInput = document.getElementById("attendanceSearchInput");
+
+let allAttendanceRecords = [];
 
 if (attendanceList) {
   loadAttendance();
+
+  if (attendanceSearchInput) {
+    attendanceSearchInput.addEventListener("input", () => {
+      renderGroupedAttendance();
+    });
+  }
 }
 
 async function loadAttendance() {
@@ -1055,29 +1064,120 @@ async function loadAttendance() {
     const res = await fetch(`${API}/attendance`, { headers: getAuthHeaders() });
     const attendance = await res.json();
 
-    attendanceList.innerHTML = "";
-
-    if (!Array.isArray(attendance) || attendance.length === 0) {
-      attendanceList.innerHTML = "<p>No attendance recorded.</p>";
-      return;
+    if (!Array.isArray(attendance)) {
+      allAttendanceRecords = [];
+    } else {
+      allAttendanceRecords = attendance;
     }
 
-    attendance.forEach((item) => {
-      attendanceList.innerHTML += `
-        <div class="notice">
-          <span>✅</span>
-          <p>
-            <strong>${item.studentName}</strong><br>
-            ${item.email}<br>
-            ${item.branch} • ${item.year}<br>
-            Event: ${item.eventId?.title || "Event"}
-          </p>
-          <small>${item.status || "Present"}</small>
-        </div>
-      `;
-    });
+    renderGroupedAttendance();
   } catch (err) {
     console.error("Failed to load attendance:", err);
+  }
+}
+
+function renderGroupedAttendance() {
+  if (!attendanceList) return;
+
+  attendanceList.innerHTML = "";
+
+  const query = attendanceSearchInput?.value.trim().toLowerCase() || "";
+
+  let filtered = allAttendanceRecords;
+  if (query) {
+    filtered = allAttendanceRecords.filter((item) => {
+      const eventTitle = (item.eventId?.title || "").toLowerCase();
+      const studentName = (item.studentName || "").toLowerCase();
+      const email = (item.email || "").toLowerCase();
+      const branch = (item.branch || "").toLowerCase();
+      return (
+        eventTitle.includes(query) ||
+        studentName.includes(query) ||
+        email.includes(query) ||
+        branch.includes(query)
+      );
+    });
+  }
+
+  if (filtered.length === 0) {
+    attendanceList.innerHTML = `
+      <div class="panel">
+        <p style="color: #64748b; padding: 10px 0;">No attendance records found.</p>
+      </div>
+    `;
+    return;
+  }
+
+  // GROUP BY EVENT
+  const grouped = {};
+  filtered.forEach((item) => {
+    const eventId = item.eventId?._id || item.eventId || "other";
+    const eventTitle = item.eventId?.title || "Event Attendance";
+    const eventDate = item.eventId?.date || "";
+    const eventVenue = item.eventId?.venue || "";
+    const eventCategory = item.eventId?.category || "";
+
+    if (!grouped[eventId]) {
+      grouped[eventId] = {
+        title: eventTitle,
+        date: eventDate,
+        venue: eventVenue,
+        category: eventCategory,
+        attendees: [],
+      };
+    }
+
+    grouped[eventId].attendees.push(item);
+  });
+
+  for (const eventId in grouped) {
+    const group = grouped[eventId];
+    const count = group.attendees.length;
+
+    const attendeesHtml = group.attendees
+      .map((attendee) => {
+        const initials = (attendee.studentName || "U")
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase();
+
+        return `
+          <div class="attendee-item">
+            <div class="attendee-user">
+              <div class="attendee-avatar">${initials}</div>
+              <div>
+                <strong>${attendee.studentName}</strong>
+                <p>${attendee.branch} • ${attendee.year}</p>
+              </div>
+            </div>
+            <div class="attendee-email">${attendee.email}</div>
+            <span class="status-present-pill">✅ Present</span>
+          </div>
+        `;
+      })
+      .join("");
+
+    attendanceList.innerHTML += `
+      <div class="event-attendance-group">
+        <div class="event-attendance-header">
+          <div>
+            <h3>${group.title}</h3>
+            <p class="event-attendance-meta">
+              ${group.date ? `📅 ${group.date}` : ""} ${group.venue ? `• 📍 ${group.venue}` : ""} ${group.category ? `• 🏷️ ${group.category}` : ""}
+            </p>
+          </div>
+          <span class="attendance-count-badge">
+            ${count} ${count === 1 ? "Student" : "Students"} Present
+          </span>
+        </div>
+
+        <div class="event-attendees-list">
+          ${attendeesHtml}
+        </div>
+      </div>
+    `;
   }
 }
 

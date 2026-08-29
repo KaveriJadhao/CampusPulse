@@ -40,13 +40,20 @@
     <section class="welcome">
       <div>
         <h1>Attendance Records</h1>
-        <p>View students who marked attendance.</p>
+        <p>View attendees organized by event.</p>
       </div>
     </section>
 
-    <section class="panel">
-      <div id="attendanceList"></div>
+    <section class="filter-tabs" style="margin-top: 20px; margin-bottom: 24px;">
+      <input
+        type="text"
+        id="attendanceSearchInput"
+        placeholder="Search by event, student name, or branch..."
+        style="max-width: 450px;"
+      />
     </section>
+
+    <div id="attendanceList"></div>
   </main>
 </div>
 
