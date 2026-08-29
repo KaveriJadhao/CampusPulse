@@ -5,22 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CampusPulse | Mark Attendance</title>
   <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <div class="attendance-page">
   <div class="attendance-card">
-   
+    
+    <div class="attendance-logo">
+      <div class="logo-icon">CP</div>
+      <span class="logo-text">CampusPulse</span>
+    </div>
 
-    <h1>Mark Attendance</h1>
-    <p>Enter your registered email to confirm your presence for this event.</p>
+    <div class="event-preview-banner" id="eventPreviewBanner">
+      <span class="event-banner-tag" id="eventBannerCategory">EVENT</span>
+      <h2 id="eventBannerTitle">Event Attendance</h2>
+      <p id="eventBannerMeta">📅 Loading details...</p>
+    </div>
+
+    <div class="attendance-header-text">
+      <h1>Mark Attendance</h1>
+      <p>Enter the registered student's email to verify registration and record attendance.</p>
+    </div>
 
     <form id="attendanceForm">
-      <input type="email" name="email" placeholder="Enter registered email" required>
-      <button type="submit">Mark Present</button>
+      <input type="email" name="email" id="attendanceEmailInput" placeholder="Enter student's registered email" required>
+      <button type="submit" id="markPresentBtn">Mark Present ✅</button>
     </form>
 
-    <a href="events.html">← Back to Events</a>
+    <div id="attendanceAlert" style="display: none; margin-top: 16px; padding: 12px 16px; border-radius: 10px; font-size: 13.5px; font-weight: 600;"></div>
+
+    <div class="attendance-back-link">
+      <a href="manage-events.html" id="backLink">← Back to Manage Events</a>
+    </div>
   </div>
 </div>
 

@@ -1221,35 +1221,83 @@ async function loadMyRegistrations() {
 
 // MARK ATTENDANCE
 const attendanceForm = document.getElementById("attendanceForm");
+const eventBannerCategory = document.getElementById("eventBannerCategory");
+const eventBannerTitle = document.getElementById("eventBannerTitle");
+const eventBannerMeta = document.getElementById("eventBannerMeta");
+const attendanceAlert = document.getElementById("attendanceAlert");
+const backLink = document.getElementById("backLink");
 
 if (attendanceForm) {
+  const currentEventId = new URLSearchParams(window.location.search).get("id");
+
+  // Customize back link based on user role
+  if (backLink && user?.role === "college-admin") {
+    backLink.href = "attendance.html";
+    backLink.textContent = "← Back to Attendance Records";
+  }
+
+  // Load event details for the banner
+  if (currentEventId) {
+    fetch(`${API}/events/${currentEventId}`)
+      .then((r) => r.json())
+      .then((event) => {
+        if (event && event.title) {
+          if (eventBannerTitle) eventBannerTitle.textContent = event.title;
+          if (eventBannerCategory) eventBannerCategory.textContent = event.category || "EVENT";
+          if (eventBannerMeta) {
+            eventBannerMeta.textContent = `📅 ${event.date || "Date TBA"} • 📍 ${event.venue || "Venue"}`;
+          }
+        }
+      })
+      .catch(() => {});
+  }
+
   attendanceForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const eventId = new URLSearchParams(window.location.search).get("id");
     const formData = new FormData(attendanceForm);
-    const email = formData.get("email");
+    const email = formData.get("email")?.trim().toLowerCase();
 
-    const registrations = await (await fetch(`${API}/registrations`)).json();
+    if (!email) return;
 
-    const student = registrations.find(
-      (reg) => reg.email === email && reg.eventId?._id === eventId
-    );
-
-    if (!student) {
-      alert("You are not registered for this event.");
-      return;
+    if (attendanceAlert) {
+      attendanceAlert.style.display = "none";
     }
 
-    const attendanceData = {
-      eventId: eventId,
-      studentName: student.studentName,
-      email: student.email,
-      branch: student.branch,
-      year: student.year,
-    };
-
     try {
+      const regRes = await fetch(`${API}/registrations`, { headers: getAuthHeaders() });
+      const registrations = await regRes.json();
+
+      if (!Array.isArray(registrations)) {
+        alert("Failed to load registration data. Please try again.");
+        return;
+      }
+
+      const student = registrations.find(
+        (reg) => (reg.email || "").toLowerCase() === email && ((reg.eventId?._id || reg.eventId) === currentEventId)
+      );
+
+      if (!student) {
+        if (attendanceAlert) {
+          attendanceAlert.style.display = "block";
+          attendanceAlert.style.background = "#fef2f2";
+          attendanceAlert.style.border = "1.5px solid #fecaca";
+          attendanceAlert.style.color = "#dc2626";
+          attendanceAlert.textContent = "❌ Student with this email is not registered for this event.";
+        } else {
+          alert("Student is not registered for this event.");
+        }
+        return;
+      }
+
+      const attendanceData = {
+        eventId: currentEventId,
+        studentName: student.studentName,
+        email: student.email,
+        branch: student.branch,
+        year: student.year,
+      };
+
       const response = await fetch(`${API}/attendance`, {
         method: "POST",
         headers: getAuthHeaders(),
@@ -1259,10 +1307,28 @@ if (attendanceForm) {
       const result = await response.json().catch(() => ({}));
 
       if (response.ok) {
-        alert("Attendance marked successfully!");
+        if (attendanceAlert) {
+          attendanceAlert.style.display = "block";
+          attendanceAlert.style.background = "#f0fdf4";
+          attendanceAlert.style.border = "1.5px solid #bbf7d0";
+          attendanceAlert.style.color = "#16a34a";
+          attendanceAlert.innerHTML = `✅ Attendance Marked for <strong>${student.studentName}</strong> (${student.branch} • ${student.year})!`;
+        } else {
+          alert("Attendance marked successfully!");
+        }
         attendanceForm.reset();
+        const input = document.getElementById("attendanceEmailInput");
+        if (input) input.focus();
       } else {
-        alert(result.message || "Attendance failed");
+        if (attendanceAlert) {
+          attendanceAlert.style.display = "block";
+          attendanceAlert.style.background = "#fffbeb";
+          attendanceAlert.style.border = "1.5px solid #fde68a";
+          attendanceAlert.style.color = "#d97706";
+          attendanceAlert.textContent = `⚠️ ${result.message || "Attendance failed or already marked."}`;
+        } else {
+          alert(result.message || "Attendance failed");
+        }
       }
     } catch (err) {
       alert("Network error: Failed to mark attendance");
