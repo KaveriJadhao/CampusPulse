@@ -37,8 +37,21 @@
     <section class="welcome">
       <div>
         <h1>Admin Dashboard</h1>
-        <p>Track events, registrations, and participation.</p>
+        <p>Track event registrations, participant lists, and reports.</p>
       </div>
+    </section>
+
+    <section class="filter-tabs" style="margin-top: 20px; margin-bottom: 22px; display: flex; gap: 14px; flex-wrap: wrap;">
+      <select id="adminEventSelect" style="min-width: 280px; padding: 12px 18px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 14px; font-weight: 700; background: #ffffff; color: var(--primary); cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+        <option value="All">📌 All Events Overview</option>
+      </select>
+
+      <input
+        type="text"
+        id="adminSearchInput"
+        placeholder="Search student name, email, or branch..."
+        style="flex: 1; min-width: 250px;"
+      />
     </section>
 
     <section class="stats-grid">
@@ -50,14 +63,14 @@
 
       <div class="stat-card">
         <span></span>
-        <p>Total Registrations</p>
+        <p id="registrationStatLabel">Total Registrations</p>
         <h2 id="totalRegistrations">0</h2>
       </div>
     </section>
 
     <section class="panel" style="margin-top: 24px;">
       <div class="panel-head">
-        <h2>Recent Registrations</h2>
+        <h2 id="registrationsSectionTitle">Registered Students</h2>
       </div>
       <div id="registrationsList"></div>
     </section>

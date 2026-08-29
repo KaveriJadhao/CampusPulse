@@ -805,17 +805,33 @@ async function loadEditEvent() {
 // ADMIN DASHBOARD
 const totalEvents = document.getElementById("totalEvents");
 const totalRegistrations = document.getElementById("totalRegistrations");
+const registrationStatLabel = document.getElementById("registrationStatLabel");
+const registrationsSectionTitle = document.getElementById("registrationsSectionTitle");
 const registrationsList = document.getElementById("registrationsList");
 const eventStats = document.getElementById("eventStats");
+const adminEventSelect = document.getElementById("adminEventSelect");
+const adminSearchInput = document.getElementById("adminSearchInput");
+
+let allAdminEvents = [];
+let allAdminRegistrations = [];
 
 if (totalEvents && totalRegistrations && registrationsList) {
   loadAdminDashboard();
+
+  if (adminEventSelect) {
+    adminEventSelect.addEventListener("change", () => {
+      renderAdminDashboardData();
+    });
+  }
+
+  if (adminSearchInput) {
+    adminSearchInput.addEventListener("input", () => {
+      renderAdminDashboardData();
+    });
+  }
 }
 
 async function loadAdminDashboard() {
-  let events = [];
-  let registrations = [];
-
   try {
     const [eventsRes, regsRes] = await Promise.allSettled([
       fetch(`${API}/events`).then((r) => r.json()),
@@ -823,25 +839,124 @@ async function loadAdminDashboard() {
     ]);
 
     if (eventsRes.status === "fulfilled" && Array.isArray(eventsRes.value)) {
-      events = eventsRes.value;
+      allAdminEvents = eventsRes.value;
+    } else {
+      allAdminEvents = [];
     }
+
     if (regsRes.status === "fulfilled" && Array.isArray(regsRes.value)) {
-      registrations = regsRes.value;
+      allAdminRegistrations = regsRes.value;
+    } else {
+      allAdminRegistrations = [];
     }
+
+    populateAdminEventDropdown();
+    renderAdminDashboardData();
   } catch (err) {
     console.error("Admin dashboard fetch error:", err);
   }
+}
 
-  if (totalEvents) totalEvents.textContent = events.length;
-  if (totalRegistrations) totalRegistrations.textContent = registrations.length;
+function populateAdminEventDropdown() {
+  if (!adminEventSelect) return;
 
+  const currentVal = adminEventSelect.value || "All";
+  adminEventSelect.innerHTML = `<option value="All">📌 All Events Overview (${allAdminRegistrations.length} Total)</option>`;
+
+  // Map counts per event
+  const countsByEventId = {};
+  allAdminRegistrations.forEach((reg) => {
+    const evId = reg.eventId?._id || reg.eventId || "unknown";
+    countsByEventId[evId] = (countsByEventId[evId] || 0) + 1;
+  });
+
+  allAdminEvents.forEach((ev) => {
+    const count = countsByEventId[ev._id] || 0;
+    const opt = document.createElement("option");
+    opt.value = ev._id;
+    opt.textContent = `🎯 ${ev.title} (${count} Registered)`;
+    if (ev._id === currentVal) opt.selected = true;
+    adminEventSelect.appendChild(opt);
+  });
+}
+
+function selectAdminEvent(eventId) {
+  if (adminEventSelect) {
+    adminEventSelect.value = eventId;
+    renderAdminDashboardData();
+    const panel = document.getElementById("registrationsSectionTitle");
+    if (panel) {
+      panel.scrollIntoView({ behavior: "smooth" });
+    }
+  }
+}
+
+function renderAdminDashboardData() {
+  const selectedEventId = adminEventSelect?.value || "All";
+  const query = adminSearchInput?.value.trim().toLowerCase() || "";
+
+  if (totalEvents) {
+    totalEvents.textContent = allAdminEvents.length;
+  }
+
+  // Filter registrations by selected event
+  let eventFilteredRegs = allAdminRegistrations;
+  let currentEventName = "All Events";
+
+  if (selectedEventId !== "All") {
+    const selectedEvent = allAdminEvents.find((e) => e._id === selectedEventId);
+    currentEventName = selectedEvent ? selectedEvent.title : "Selected Event";
+
+    eventFilteredRegs = allAdminRegistrations.filter((reg) => {
+      const evId = reg.eventId?._id || reg.eventId || "";
+      return evId === selectedEventId;
+    });
+
+    if (registrationStatLabel) {
+      registrationStatLabel.textContent = `Registrations: ${currentEventName}`;
+    }
+    if (registrationsSectionTitle) {
+      registrationsSectionTitle.textContent = `Registered Students for "${currentEventName}" (${eventFilteredRegs.length})`;
+    }
+  } else {
+    if (registrationStatLabel) {
+      registrationStatLabel.textContent = "Total Registrations (All Events)";
+    }
+    if (registrationsSectionTitle) {
+      registrationsSectionTitle.textContent = `All Registered Students (${allAdminRegistrations.length})`;
+    }
+  }
+
+  // Set the total registration number for this event
+  if (totalRegistrations) {
+    totalRegistrations.textContent = eventFilteredRegs.length;
+  }
+
+  // Filter by search query
+  let displayRegs = eventFilteredRegs;
+  if (query) {
+    displayRegs = eventFilteredRegs.filter((reg) => {
+      const sName = (reg.studentName || "").toLowerCase();
+      const sEmail = (reg.email || "").toLowerCase();
+      const sBranch = (reg.branch || "").toLowerCase();
+      const evTitle = (reg.eventId?.title || "").toLowerCase();
+      return (
+        sName.includes(query) ||
+        sEmail.includes(query) ||
+        sBranch.includes(query) ||
+        evTitle.includes(query)
+      );
+    });
+  }
+
+  // Render registrations list
   if (registrationsList) {
     registrationsList.innerHTML = "";
 
-    if (registrations.length === 0) {
-      registrationsList.innerHTML = "<p style='color: #64748b; padding: 12px 0;'>No registrations recorded yet.</p>";
+    if (displayRegs.length === 0) {
+      registrationsList.innerHTML = `<p style="color: #64748b; padding: 14px 0;">No registrations found for ${currentEventName}.</p>`;
     } else {
-      registrations.forEach((reg) => {
+      displayRegs.forEach((reg) => {
         const initials = (reg.studentName || "U")
           .split(" ")
           .map((n) => n[0])
@@ -856,7 +971,7 @@ async function loadAdminDashboard() {
               <div class="reg-details">
                 <h4>${reg.studentName || "Student"}</h4>
                 <p>${reg.branch || "Branch"} • ${reg.year || "Year"}</p>
-                <span class="reg-event-badge">Event: ${reg.eventId?.title || "Event"}</span>
+                <span class="reg-event-badge">Event: ${reg.eventId?.title || currentEventName}</span>
               </div>
             </div>
             <div class="reg-email-tag">
@@ -868,32 +983,44 @@ async function loadAdminDashboard() {
     }
   }
 
+  // Render Event Statistics Cards
   if (eventStats) {
     const eventCounts = {};
 
-    registrations.forEach((reg) => {
+    allAdminRegistrations.forEach((reg) => {
       const title = reg.eventId?.title || "Unknown Event";
       eventCounts[title] = (eventCounts[title] || 0) + 1;
     });
 
     eventStats.innerHTML = "";
 
-    if (Object.keys(eventCounts).length === 0) {
-      eventStats.innerHTML = "<p style='color: #64748b; padding: 12px 0;'>No event registration statistics available.</p>";
+    if (allAdminEvents.length === 0) {
+      eventStats.innerHTML = "<p style='color: #64748b; padding: 12px 0;'>No events available.</p>";
     } else {
-      for (const eventName in eventCounts) {
+      allAdminEvents.forEach((ev) => {
+        const count = eventCounts[ev.title] || 0;
+        const isCurrentlySelected = selectedEventId === ev._id;
+
         eventStats.innerHTML += `
-          <div class="event-stat-card">
+          <div class="event-stat-card" style="${isCurrentlySelected ? 'border: 2px solid var(--primary); background: #ffffff;' : ''}">
             <div class="event-stat-header">
-              <h3>${eventName}</h3>
-              <span class="participant-count-badge">${eventCounts[eventName]} Registered</span>
+              <div>
+                <h3>${ev.title}</h3>
+                <p style="font-size: 13px; color: #64748b; margin-top: 3px;">${ev.date || ""} • ${ev.venue || ""}</p>
+              </div>
+              <span class="participant-count-badge">${count} Registered</span>
             </div>
-            <button type="button" onclick="downloadParticipants('${eventName.replace(/'/g, "\\'")}')">
-              Download CSV Report
-            </button>
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+              <button type="button" class="edit-btn" style="flex: 1; padding: 9px 12px; font-size: 12.5px;" onclick="selectAdminEvent('${ev._id}')">
+                ${isCurrentlySelected ? "✓ Currently Viewing" : "View Students"}
+              </button>
+              <button type="button" style="flex: 1; padding: 9px 12px; font-size: 12.5px; background: var(--primary);" onclick="downloadParticipants('${ev.title.replace(/'/g, "\\'")}')">
+                Download CSV
+              </button>
+            </div>
           </div>
         `;
-      }
+      });
     }
   }
 }
