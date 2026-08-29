@@ -779,24 +779,24 @@ function renderManageEvents() {
     const catShort = (event.category || "EVT").slice(0, 3).toUpperCase();
 
     manageEventsList.innerHTML += `
-      <div class="event-item" style="grid-template-columns: 70px 1fr auto; gap: 18px; align-items: center; padding: 18px 0;">
-        <div class="event-img" style="width: 70px; height: 65px; border-radius: 12px; font-weight: 800; font-size: 15px;">
+      <div class="event-item manage-event-item">
+        <div class="event-img manage-event-img">
           ${catShort}
         </div>
 
-        <div>
-          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <h3 style="margin: 0; color: var(--primary); font-size: 17px;">${event.title}</h3>
-            <span class="participant-count-badge" style="font-size: 11.5px; padding: 3px 9px;">${regCount} Registered</span>
+        <div class="event-item-body">
+          <div class="event-title-row">
+            <h3>${event.title}</h3>
+            <span class="participant-count-badge">${regCount} Registered</span>
           </div>
-          <p style="color: #64748b; font-size: 13px; margin: 4px 0;">${event.organizer} • ${event.category}</p>
-          <small style="color: #94a3b8; font-size: 12.5px;">📅 ${event.date} • ⏰ ${event.time || "TBA"} • 📍 ${event.venue} • 💳 ₹${event.fee || 0}</small>
+          <p class="event-org-cat">${event.organizer} • ${event.category}</p>
+          <small class="event-meta-info">📅 ${event.date} • ⏰ ${event.time || "TBA"} • 📍 ${event.venue} • 💳 ₹${event.fee || 0}</small>
         </div>
 
-        <div class="manage-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <div class="manage-actions">
           <button type="button" class="edit-btn" onclick="editEvent('${event._id}')">Edit</button>
-          <button type="button" style="background: #0d9488; color: white;" onclick="openAttendance('${event._id}')">Attendance</button>
-          <button type="button" style="background: var(--primary); color: white;" onclick="downloadParticipants('${event.title.replace(/'/g, "\\'")}')">CSV</button>
+          <button type="button" class="attendance-btn-teal" onclick="openAttendance('${event._id}')">Attendance</button>
+          <button type="button" class="csv-btn-navy" onclick="downloadParticipants('${event.title.replace(/'/g, "\\'")}')">CSV</button>
           <button type="button" class="delete-btn" onclick="deleteEvent('${event._id}')">Delete</button>
         </div>
       </div>
@@ -1223,27 +1223,27 @@ async function loadMyRegistrations() {
       const isAttended = attendedEventIds.has(evId);
 
       myRegistrationsList.innerHTML += `
-        <div class="event-item" style="grid-template-columns: 70px 1fr auto; gap: 16px; align-items: center;">
-          <div class="event-img" style="background: ${isAttended ? '#059669' : '#003366'}; color: white; width: 65px; height: 60px; border-radius: 12px; font-size: 16px; font-weight: 800;">
+        <div class="event-item registration-event-item">
+          <div class="event-img ${isAttended ? 'event-img-attended' : 'event-img-registered'}">
             ${isAttended ? "✓" : "REG"}
           </div>
 
-          <div>
-            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-              <h3 style="margin: 0; color: var(--primary);">${reg.eventId?.title || "Event"}</h3>
-              <span style="font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: ${isAttended ? '#ecfdf5' : '#eff6ff'}; color: ${isAttended ? '#059669' : '#003366'}; border: 1px solid ${isAttended ? '#a7f3d0' : '#bfdbfe'};">
+          <div class="event-item-body">
+            <div class="event-title-row">
+              <h3>${reg.eventId?.title || "Event"}</h3>
+              <span class="reg-status-pill ${isAttended ? 'status-attended' : 'status-upcoming'}">
                 ${isAttended ? "✅ Attended" : "📌 Registered (Upcoming)"}
               </span>
             </div>
-            <p style="color: #64748b; font-size: 13px; margin: 4px 0;">${reg.eventId?.organizer || "Organizer"}</p>
-            <small style="color: #94a3b8; font-size: 12.5px;">📅 ${reg.eventId?.date || ""} • 📍 ${reg.eventId?.venue || ""}</small>
+            <p class="event-org-cat">${reg.eventId?.organizer || "Organizer"}</p>
+            <small class="event-meta-info">📅 ${reg.eventId?.date || ""} • 📍 ${reg.eventId?.venue || ""}</small>
           </div>
 
-          <div>
+          <div class="registration-actions">
             ${
               isAttended
-                ? `<a href="certificates.html" style="display: inline-block; padding: 9px 16px; font-size: 13px; font-weight: 700; background: #059669; color: white; border-radius: 8px; text-decoration: none;">Get Certificate 🎓</a>`
-                : `<button type="button" style="background: var(--primary); color: white; padding: 9px 16px; font-size: 13px; font-weight: 700; border-radius: 8px;" disabled>Registered</button>`
+                ? `<a href="certificates.html" class="cert-btn-green">Get Certificate 🎓</a>`
+                : `<button type="button" class="reg-btn-disabled" disabled>Registered</button>`
             }
           </div>
         </div>

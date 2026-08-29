@@ -551,23 +551,196 @@ textarea:focus {
   white-space: nowrap;
 }
 
-.event-stat-card button {
-  width: 100%;
-  padding: 10px 16px;
+/* MANAGE EVENT & REGISTRATION ITEMS (RESPONSIVE) */
+
+.manage-event-item,
+.registration-event-item {
+  display: grid;
+  grid-template-columns: 70px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.manage-event-img {
+  width: 70px;
+  height: 65px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.event-img-attended {
+  background: #059669 !important;
+  color: white !important;
+  width: 65px;
+  height: 60px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.event-img-registered {
+  background: #003366 !important;
+  color: white !important;
+  width: 65px;
+  height: 60px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.event-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.event-title-row h3 {
+  margin: 0;
+  color: var(--primary);
+  font-size: 17px;
+}
+
+.event-org-cat {
+  color: #64748b;
+  font-size: 13px;
+  margin: 4px 0;
+}
+
+.event-meta-info {
+  color: #94a3b8;
+  font-size: 12.5px;
+}
+
+.reg-status-pill {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.status-attended {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.status-upcoming {
+  background: #eff6ff;
+  color: #003366;
+  border: 1px solid #bfdbfe;
+}
+
+.attendance-btn-teal {
+  background: #0d9488 !important;
+  color: white !important;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.2);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.attendance-btn-teal:hover {
+  background: #0f766e !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35);
+}
+
+.csv-btn-navy {
+  background: var(--primary) !important;
+  color: white !important;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 51, 102, 0.15);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.csv-btn-navy:hover {
+  background: var(--primary-light) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 51, 102, 0.25);
+}
+
+.cert-btn-green {
+  display: inline-block;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  background: #059669;
+  color: white !important;
+  border-radius: 8px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.2);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cert-btn-green:hover {
+  background: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+}
+
+.reg-btn-disabled {
+  background: var(--primary);
+  color: white;
+  padding: 9px 16px;
   font-size: 13px;
   font-weight: 700;
   border-radius: 8px;
-  background: var(--primary);
-  color: white;
+  border: none;
+  opacity: 0.85;
+}
+
+.filter-controls-bar {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.event-select-dropdown {
+  min-width: 260px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  font-size: 14px;
+  font-weight: 700;
+  background: #ffffff;
+  color: var(--primary);
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 51, 102, 0.12);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
 }
 
-.event-stat-card button:hover {
-  background: var(--primary-light);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 51, 102, 0.22);
+.event-select-dropdown:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.12);
 }
 
 /* EVENT ATTENDANCE GROUPS */
@@ -1704,7 +1877,9 @@ textarea:focus {
   }
 
   /* EVENT ITEMS & LISTS */
-  .event-item {
+  .event-item,
+  .manage-event-item,
+  .registration-event-item {
     display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
@@ -1713,9 +1888,12 @@ textarea:focus {
     border-bottom: 1px solid #f1f5f9 !important;
   }
 
-  .event-img {
+  .event-img,
+  .manage-event-img,
+  .event-img-attended,
+  .event-img-registered {
     width: 100% !important;
-    height: 52px !important;
+    height: 50px !important;
     border-radius: 10px !important;
     display: flex !important;
     align-items: center !important;
@@ -1723,21 +1901,25 @@ textarea:focus {
     font-size: 15px !important;
   }
 
-  .event-item h3 {
+  .event-item h3,
+  .event-title-row h3 {
     font-size: 16px !important;
   }
 
-  .event-item p {
+  .event-item p,
+  .event-org-cat {
     font-size: 13px !important;
   }
 
-  .event-item small {
+  .event-item small,
+  .event-meta-info {
     font-size: 12px !important;
     display: block !important;
     margin-top: 4px !important;
   }
 
-  .manage-actions {
+  .manage-actions,
+  .registration-actions {
     display: flex !important;
     flex-wrap: wrap !important;
     gap: 8px !important;
@@ -1747,13 +1929,18 @@ textarea:focus {
 
   .manage-actions button,
   .manage-actions .edit-btn,
-  .manage-actions .delete-btn {
+  .manage-actions .attendance-btn-teal,
+  .manage-actions .csv-btn-navy,
+  .manage-actions .delete-btn,
+  .registration-actions .cert-btn-green,
+  .registration-actions .reg-btn-disabled {
     flex: 1 1 calc(50% - 6px) !important;
     min-width: 75px !important;
     padding: 9px 10px !important;
     font-size: 12.5px !important;
     text-align: center !important;
     justify-content: center !important;
+    width: auto !important;
   }
 
   .view-btn {
