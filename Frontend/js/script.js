@@ -45,7 +45,7 @@ if (user) {
 
   if (user.role === "forum-admin") {
     const blockedForumAdminPages = [
-      "admin-dashboard.html",
+      "certificates.html",
     ];
 
     if (blockedForumAdminPages.includes(currentFile)) {
@@ -678,34 +678,127 @@ async function deleteNotice(id) {
 // MANAGE EVENTS PAGE
 const manageEventsList = document.getElementById("manageEventsList");
 
+// MANAGE EVENTS
+const manageEventsSearchInput = document.getElementById("manageEventsSearchInput");
+let allManageEvents = [];
+let allManageRegistrations = [];
+let selectedManageCategory = "All";
+
 if (manageEventsList) {
   loadManageEvents();
+
+  if (manageEventsSearchInput) {
+    manageEventsSearchInput.addEventListener("input", () => {
+      renderManageEvents();
+    });
+  }
 }
 
 async function loadManageEvents() {
-  const response = await fetch(`${API}/events`);
-  const events = await response.json();
+  try {
+    const [eventsRes, regsRes] = await Promise.allSettled([
+      fetch(`${API}/events`).then((r) => r.json()),
+      fetch(`${API}/registrations`, { headers: getAuthHeaders() }).then((r) => r.json()),
+    ]);
+
+    if (eventsRes.status === "fulfilled" && Array.isArray(eventsRes.value)) {
+      allManageEvents = eventsRes.value;
+    } else {
+      allManageEvents = [];
+    }
+
+    if (regsRes.status === "fulfilled" && Array.isArray(regsRes.value)) {
+      allManageRegistrations = regsRes.value;
+    } else {
+      allManageRegistrations = [];
+    }
+
+    renderManageEvents();
+  } catch (err) {
+    console.error("Failed to load manage events:", err);
+  }
+}
+
+function filterManageEvents(category) {
+  selectedManageCategory = category;
+
+  document.querySelectorAll(".filter-tabs button").forEach((btn) => {
+    if (btn.textContent.trim().toLowerCase() === category.toLowerCase()) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+
+  renderManageEvents();
+}
+
+function renderManageEvents() {
+  if (!manageEventsList) return;
 
   manageEventsList.innerHTML = "";
 
-  events.forEach((event) => {
+  const searchText = manageEventsSearchInput?.value.trim().toLowerCase() || "";
+
+  let filtered = allManageEvents;
+
+  if (selectedManageCategory !== "All") {
+    filtered = filtered.filter(
+      (ev) => (ev.category || "").toLowerCase() === selectedManageCategory.toLowerCase()
+    );
+  }
+
+  if (searchText) {
+    filtered = filtered.filter((ev) => {
+      const title = (ev.title || "").toLowerCase();
+      const org = (ev.organizer || "").toLowerCase();
+      const venue = (ev.venue || "").toLowerCase();
+      const cat = (ev.category || "").toLowerCase();
+      return (
+        title.includes(searchText) ||
+        org.includes(searchText) ||
+        venue.includes(searchText) ||
+        cat.includes(searchText)
+      );
+    });
+  }
+
+  if (filtered.length === 0) {
+    manageEventsList.innerHTML = "<p style='color: #64748b; padding: 14px 0;'>No events found.</p>";
+    return;
+  }
+
+  const countsByEventId = {};
+  allManageRegistrations.forEach((reg) => {
+    const evId = reg.eventId?._id || reg.eventId || "unknown";
+    countsByEventId[evId] = (countsByEventId[evId] || 0) + 1;
+  });
+
+  filtered.forEach((event) => {
+    const regCount = countsByEventId[event._id] || 0;
+    const catShort = (event.category || "EVT").slice(0, 3).toUpperCase();
+
     manageEventsList.innerHTML += `
-      <div class="event-item">
-        <div>
-          <h3>${event.title}</h3>
-          <p>${event.organizer}</p>
-          <small>${event.date} • ${event.venue}</small>
+      <div class="event-item" style="grid-template-columns: 70px 1fr auto; gap: 18px; align-items: center; padding: 18px 0;">
+        <div class="event-img" style="width: 70px; height: 65px; border-radius: 12px; font-weight: 800; font-size: 15px;">
+          ${catShort}
         </div>
 
-        <div class="manage-actions">
-  <button onclick="editEvent('${event._id}')">Edit</button>
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <h3 style="margin: 0; color: var(--primary); font-size: 17px;">${event.title}</h3>
+            <span class="participant-count-badge" style="font-size: 11.5px; padding: 3px 9px;">${regCount} Registered</span>
+          </div>
+          <p style="color: #64748b; font-size: 13px; margin: 4px 0;">${event.organizer} • ${event.category}</p>
+          <small style="color: #94a3b8; font-size: 12.5px;">📅 ${event.date} • ⏰ ${event.time || "TBA"} • 📍 ${event.venue} • 💳 ₹${event.fee || 0}</small>
+        </div>
 
-  <button onclick="openAttendance('${event._id}')">
-    Attendance
-  </button>
-
-  <button onclick="deleteEvent('${event._id}')">Delete</button>
-</div>
+        <div class="manage-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="edit-btn" onclick="editEvent('${event._id}')">Edit</button>
+          <button type="button" style="background: #0d9488; color: white;" onclick="openAttendance('${event._id}')">Attendance</button>
+          <button type="button" style="background: var(--primary); color: white;" onclick="downloadParticipants('${event.title.replace(/'/g, "\\'")}')">CSV</button>
+          <button type="button" class="delete-btn" onclick="deleteEvent('${event._id}')">Delete</button>
+        </div>
       </div>
     `;
   });
@@ -714,6 +807,7 @@ async function loadManageEvents() {
 function editEvent(id) {
   window.location.href = `edit-event.html?id=${id}`;
 }
+
 function openAttendance(id) {
   window.location.href = `mark-attendance.html?id=${id}`;
 }
@@ -1553,7 +1647,6 @@ if (user) {
   if (user.role === "forum-admin") {
     removeElement(eventsLink);
     removeElement(registrationsLink);
-    removeElement(adminDashboardLink);
     removeElement(certificatesLink);
   }
 

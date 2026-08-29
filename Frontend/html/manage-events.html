@@ -40,12 +40,32 @@
     <section class="welcome">
       <div>
         <h1>Manage Events</h1>
-        <p>Edit, delete, and manage all posted events.</p>
+        <p>Edit, delete, monitor registrations, and manage college events.</p>
       </div>
     </section>
 
+    <section class="filter-tabs" style="margin-top: 20px; margin-bottom: 14px;">
+      <button type="button" onclick="filterManageEvents('All')" class="active">All</button>
+      <button type="button" onclick="filterManageEvents('Hackathon')">Hackathon</button>
+      <button type="button" onclick="filterManageEvents('Workshop')">Workshop</button>
+      <button type="button" onclick="filterManageEvents('Cultural')">Cultural</button>
+      <button type="button" onclick="filterManageEvents('Sports')">Sports</button>
+      <button type="button" onclick="filterManageEvents('Technical')">Technical</button>
+    </section>
+
+    <section class="filter-tabs" style="margin-bottom: 22px;">
+      <input
+        type="text"
+        id="manageEventsSearchInput"
+        placeholder="Search event by name, organizer, venue..."
+        style="max-width: 450px;"
+      />
+    </section>
+
     <section class="panel">
-      <h2>All Events</h2>
+      <div class="panel-head">
+        <h2>Posted Events</h2>
+      </div>
       <div id="manageEventsList"></div>
     </section>
   </main>
