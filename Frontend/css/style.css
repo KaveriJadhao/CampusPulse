@@ -1703,10 +1703,6 @@ textarea:focus {
     width: 100% !important;
   }
 
-  /* SIDEBAR NAVIGATION */
-  .sidebar {
-    position: sticky !important;
-    top: 0;
   /* SIDEBAR NAVIGATION (SINGLE SLEEK MOBILE ROW) */
   .sidebar {
     position: sticky !important;
