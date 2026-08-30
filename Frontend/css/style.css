@@ -1685,6 +1685,24 @@ textarea:focus {
    COMPREHENSIVE MOBILE RESPONSIVE STYLES
    ========================================================= */
 
+/* HAMBURGER TOGGLE BUTTON */
+.menu-toggle-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 26px;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.menu-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
 @media (max-width: 768px) {
   /* Global viewport & body */
   html, body {
@@ -1703,74 +1721,84 @@ textarea:focus {
     width: 100% !important;
   }
 
-  /* SIDEBAR NAVIGATION (SINGLE SLEEK MOBILE ROW) */
+  .menu-toggle-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* MOBILE TOP NAVBAR & DROPDOWN DRAWER */
   .sidebar {
     position: sticky !important;
     top: 0;
     width: 100% !important;
     height: auto !important;
-    padding: 8px 12px !important;
+    padding: 12px 18px !important;
     border-right: none !important;
     border-bottom: 3px solid var(--accent);
     background: var(--primary) !important;
     z-index: 999;
     display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    gap: 6px !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    scrollbar-width: none !important;
-  }
-
-  .sidebar::-webkit-scrollbar {
-    display: none !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0 !important;
+    box-shadow: 0 4px 20px rgba(0, 30, 70, 0.2) !important;
   }
 
   .logo {
-    width: auto !important;
-    margin: 0 !important;
+    width: 100% !important;
     display: flex !important;
     align-items: center !important;
-    gap: 8px !important;
-    flex-shrink: 0 !important;
-    padding-right: 10px !important;
-    border-right: 1.5px solid rgba(255, 255, 255, 0.2) !important;
-    margin-right: 2px !important;
+    justify-content: space-between !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
   }
 
   .logo-icon {
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    font-size: 13px !important;
-    border-radius: 8px !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    font-size: 14px !important;
+    border-radius: 9px !important;
   }
 
   .logo-text {
-    font-size: 18px !important;
-    white-space: nowrap !important;
+    font-size: 20px !important;
+    font-weight: 800;
   }
 
+  /* Hidden by default on mobile */
   .sidebar a {
-    display: inline-flex !important;
-    width: auto !important;
-    flex-shrink: 0 !important;
-    font-size: 12.5px !important;
+    display: none !important;
+  }
+
+  /* Revealed when user taps hamburger menu */
+  .sidebar.show {
+    padding-bottom: 16px !important;
+  }
+
+  .sidebar.show a {
+    display: flex !important;
+    width: 100% !important;
+    font-size: 14.5px !important;
     font-weight: 600 !important;
-    padding: 6px 13px !important;
-    margin: 0 !important;
-    border-radius: 999px !important;
-    background: rgba(255, 255, 255, 0.1) !important;
+    padding: 12px 16px !important;
+    margin: 4px 0 !important;
+    border-radius: 10px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
     color: #f1f5f9 !important;
     text-decoration: none !important;
-    white-space: nowrap !important;
     transition: all 0.2s ease !important;
+    animation: fadeIn 0.2s ease-in-out;
   }
 
-  .sidebar a:hover,
-  .sidebar a.active {
+  .sidebar.show a:first-of-type {
+    margin-top: 14px !important;
+  }
+
+  .sidebar.show a:hover,
+  .sidebar.show a.active {
     background: var(--accent) !important;
     color: var(--primary) !important;
     font-weight: 800 !important;

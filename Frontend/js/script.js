@@ -1874,15 +1874,43 @@ async function loadCertificates() {
 }
 function toggleMenu() {
   const sidebar = document.querySelector(".sidebar");
+  const toggleBtn = document.querySelector(".menu-toggle-btn");
   if (sidebar) {
     sidebar.classList.toggle("show");
+    if (toggleBtn) {
+      toggleBtn.textContent = sidebar.classList.contains("show") ? "✕" : "☰";
+    }
   }
 }
 
-// DYNAMIC ACTIVE LINK HIGHLIGHTING
+// DYNAMIC ACTIVE LINK HIGHLIGHTING & MOBILE MENU INJECTION
 document.addEventListener("DOMContentLoaded", () => {
+  // 1. Auto-inject hamburger button into sidebar logo if missing
+  const logo = document.querySelector(".sidebar .logo");
+  if (logo && !document.querySelector(".menu-toggle-btn")) {
+    const btn = document.createElement("button");
+    btn.className = "menu-toggle-btn";
+    btn.setAttribute("type", "button");
+    btn.setAttribute("aria-label", "Toggle navigation menu");
+    btn.textContent = "☰";
+    btn.onclick = toggleMenu;
+    logo.appendChild(btn);
+  }
+
+  // 2. Close menu when clicking outside on mobile
+  document.addEventListener("click", (e) => {
+    const sidebar = document.querySelector(".sidebar");
+    if (sidebar && sidebar.classList.contains("show")) {
+      if (!sidebar.contains(e.target)) {
+        sidebar.classList.remove("show");
+        const toggleBtn = document.querySelector(".menu-toggle-btn");
+        if (toggleBtn) toggleBtn.textContent = "☰";
+      }
+    }
+  });
+
+  // 3. Highlight current active link
   const currentFileName = window.location.pathname.split("/").pop();
-  
   if (currentFileName) {
     document.querySelectorAll(".sidebar a").forEach((link) => {
       const href = link.getAttribute("href");
@@ -1892,7 +1920,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Highlight first category button on events page
+  // 4. Highlight first category button on events page
   if (currentFileName === "events.html") {
     const allCategoryBtn = document.querySelector(".filter-tabs button");
     if (allCategoryBtn) {
